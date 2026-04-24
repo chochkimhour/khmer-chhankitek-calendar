@@ -34,4 +34,12 @@ describe('formatter', () => {
     expect(result).toContain('2026-04-14');
     expect(result).toContain('Khmer New Year');
   });
+
+  it('renders Khmer Gregorian date text when requested', () => {
+    const result = formatKhmerDate('2026-12-09', {
+      includeGregorianDate: true,
+    });
+
+    expect(result).toContain('ត្រូវនឹងថ្ងៃទី៩ ខែធ្នូ ឆ្នាំ២០២៦');
+  });
 });

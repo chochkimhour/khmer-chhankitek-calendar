@@ -59,6 +59,11 @@ Most functions accept:
 
 Use `YYYY-MM-DD` strings when you want an exact calendar date without timezone surprises.
 
+Supported Gregorian range:
+
+- `1900-01-01` and later
+- Earlier dates throw an error because the calendar algorithm uses a documented 1900 epoch
+
 ```ts
 toKhmerLunarDate('2026-05-20');
 toKhmerLunarDate(new Date(2026, 4, 20));
@@ -222,7 +227,7 @@ Holiday notes:
 
 - Fixed public holidays are generated automatically for each Gregorian year.
 - Lunar holidays such as Meak Bochea, Visak Bochea, Royal Ploughing Ceremony, Pchum Ben, and Water Festival are derived dynamically from Khmer lunar dates.
-- The package does not need a new hardcoded holiday table every year.
+- Khmer New Year holidays are derived from the Khmer calendar Songkran calculation rather than a simple fixed-date rule.
 - Cambodian public holidays can still change by official government announcement. If you find a mismatch with an official calendar, please report the date and source so it can be added to the test suite.
 
 ## Khmer New Year
@@ -236,7 +241,7 @@ getKhmerHolidays(2026)
 // ['2026-04-14', '2026-04-15', '2026-04-16']
 ```
 
-For supported Gregorian leap years, Khmer New Year can include four days.
+In years where the Songkran calculation produces two `វនប័ត` days, Khmer New Year includes four days.
 
 ```ts
 getKhmerHolidays(2024)

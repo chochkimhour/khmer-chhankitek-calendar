@@ -1,4 +1,11 @@
 const ISO_DATE_ONLY_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+export const MIN_SUPPORTED_GREGORIAN_YEAR = 1900;
+
+function assertSupportedGregorianYear(year: number): void {
+  if (year < MIN_SUPPORTED_GREGORIAN_YEAR) {
+    throw new Error(`Dates before ${MIN_SUPPORTED_GREGORIAN_YEAR}-01-01 are not supported.`);
+  }
+}
 
 /**
  * Normalizes an input date into a local calendar date at midnight.
@@ -9,6 +16,7 @@ export function normalizeDate(date: Date | string | number): Date {
     if (Number.isNaN(normalized.getTime())) {
       throw new Error('Invalid date provided.');
     }
+    assertSupportedGregorianYear(normalized.getFullYear());
     return normalized;
   }
 
@@ -28,6 +36,7 @@ export function normalizeDate(date: Date | string | number): Date {
         throw new Error('Invalid date provided.');
       }
 
+      assertSupportedGregorianYear(year);
       return normalized;
     }
   }
@@ -37,6 +46,7 @@ export function normalizeDate(date: Date | string | number): Date {
     throw new Error('Invalid date provided.');
   }
 
+  assertSupportedGregorianYear(parsed.getFullYear());
   return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
 }
 

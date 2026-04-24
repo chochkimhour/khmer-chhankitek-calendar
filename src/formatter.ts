@@ -3,6 +3,7 @@ import {
   ANIMAL_YEARS_EN,
   DAYS_OF_WEEK_EN,
   DAYS_OF_WEEK_KM,
+  GREGORIAN_MONTHS_KM,
   KHMER_MONTHS,
   KHMER_MONTHS_EN,
   MOON_STATUS_EN,
@@ -11,10 +12,20 @@ import {
 } from './constants';
 import { toKhmerLunarDate } from './converter';
 import type { FormatOptions } from './types';
+import { normalizeDate } from './utils/date';
 import { toKhmerNumber } from './utils/khmer-number';
 
 function maybeKhmerNumber(value: number | string, enabled: boolean): string {
   return enabled ? toKhmerNumber(value) : String(value);
+}
+
+function getKhmerGregorianDateText(inputDate: Date | string | number, useKhmerNumbers: boolean): string {
+  const date = normalizeDate(inputDate);
+  const day = maybeKhmerNumber(date.getDate(), useKhmerNumbers);
+  const month = GREGORIAN_MONTHS_KM[date.getMonth()];
+  const year = maybeKhmerNumber(date.getFullYear(), useKhmerNumbers);
+
+  return `ថ្ងៃទី${day} ខែ${month} ឆ្នាំ${year}`;
 }
 
 export function formatKhmerDate(
@@ -47,7 +58,7 @@ export function formatKhmerDate(
     result +=
       locale === 'en'
         ? ` (${khmerDate.gregorianDate})`
-        : ` ត្រូវនឹងថ្ងៃទី${maybeKhmerNumber(khmerDate.gregorianDate, useKhmerNumbers)}`;
+        : ` ត្រូវនឹង${getKhmerGregorianDateText(inputDate, useKhmerNumbers)}`;
   }
 
   if (includeHoliday && khmerDate.holidays.length > 0) {
@@ -55,7 +66,7 @@ export function formatKhmerDate(
       .map((holiday) => (locale === 'en' ? (holiday.nameEn ?? holiday.nameKm) : holiday.nameKm))
       .join(', ');
 
-    result += locale === 'en' ? ` [${holidayNames}]` : ` [${holidayNames}]`;
+    result += ` [${holidayNames}]`;
   }
 
   return result;

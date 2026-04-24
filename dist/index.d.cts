@@ -46,10 +46,10 @@ declare const GREGORIAN_MONTHS_KM: readonly ["មករា", "កុម្ភៈ
 /**
  * Converts a Gregorian date to a Khmer lunar date.
  *
- * This implementation is dynamic and uses astronomical new-moon estimation plus
- * Khmer New Year year-cycle rules. It is a major upgrade over the previous placeholder
- * implementation, though highly specialized edge cases of the traditional calendar may
- * still benefit from future refinement.
+ * This implementation derives Khmer civil dates from the traditional year-type
+ * rules and computes Songkran-based Khmer New Year dates for year-boundary logic.
+ * Highly specialized edge cases of the traditional calendar may still benefit
+ * from future refinement.
  */
 declare function toKhmerLunarDate(inputDate: Date | string | number): KhmerLunarDate;
 declare function getKhmerMonth(inputDate: Date | string | number): KhmerMonth;

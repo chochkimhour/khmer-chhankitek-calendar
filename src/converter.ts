@@ -6,11 +6,9 @@ import {
   SAKS,
 } from './constants';
 import type { AnimalYear, DayOfWeek, KhmerHoliday, KhmerLunarDate, KhmerMonth, Sak } from './types';
-import { formatISODate, normalizeDate } from './utils/date';
+import { formatISODate, MIN_SUPPORTED_GREGORIAN_YEAR, normalizeDate } from './utils/date';
 import { toKhmerNumber } from './utils/khmer-number';
 
-const KHMER_NEW_YEAR_MONTH = 4;
-const KHMER_NEW_YEAR_DAY = 14;
 const KHMER_EPOCH_YEAR = 1900;
 const KHMER_EPOCH_MONTH = 2;
 const KHMER_EPOCH_DAY = 1;
@@ -19,6 +17,10 @@ const LEAP_DAY_KHMER_YEAR_DAYS = 355;
 const LEAP_MONTH_KHMER_YEAR_DAYS = 384;
 const MONTH_LENGTH_SHORT = 29;
 const MONTH_LENGTH_LONG = 30;
+const SONGKRAN_SEARCH_START_MONTH = 3;
+const SONGKRAN_SEARCH_START_DAY = 10;
+const SONGKRAN_SEARCH_END_MONTH = 4;
+const SONGKRAN_SEARCH_END_DAY = 10;
 
 type KhmerYearType = 'normal' | 'leap-day' | 'leap-month';
 
@@ -34,6 +36,16 @@ interface DynamicHolidayRule {
   nameEn: string;
   type: KhmerHoliday['type'];
   matches: (lunarDate: Omit<KhmerLunarDate, 'holidays'>) => boolean;
+}
+
+interface KhmerNewYearInfo {
+  gregorianStartDate: Date;
+  totalDays: number;
+}
+
+interface KhmerLunarBoundaryDate {
+  khmerMonth: KhmerMonth;
+  monthDay: number;
 }
 
 const NORMAL_MONTHS_BY_NUMBER: KhmerMonth[] = [
@@ -68,6 +80,8 @@ const LEAP_MONTHS_BY_NUMBER: KhmerMonth[] = [
 ];
 
 const holidayCache = new Map<number, KhmerHoliday[]>();
+const khmerNewYearCache = new Map<number, KhmerNewYearInfo>();
+const vesakBoundaryCache = new Map<number, Date>();
 
 const DYNAMIC_LUNAR_HOLIDAY_RULES: DynamicHolidayRule[] = [
   {
@@ -151,22 +165,217 @@ function mod(value: number, divisor: number): number {
   return ((value % divisor) + divisor) % divisor;
 }
 
-function getKhmerReferenceYear(date: Date): number {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  return month > KHMER_NEW_YEAR_MONTH ||
-    (month === KHMER_NEW_YEAR_MONTH && day >= KHMER_NEW_YEAR_DAY)
-    ? year
-    : year - 1;
+function cloneDate(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-function isOnOrAfterKhmerNewYear(date: Date): boolean {
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
+function addDays(date: Date, days: number): Date {
+  const result = cloneDate(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
 
-  return month > KHMER_NEW_YEAR_MONTH || (month === KHMER_NEW_YEAR_MONTH && day >= KHMER_NEW_YEAR_DAY);
+function isSameOrAfterDate(date: Date, boundary: Date): boolean {
+  return cloneDate(date).getTime() >= cloneDate(boundary).getTime();
+}
+
+function findGregorianDateForKhmerCivilDate(
+  year: number,
+  boundaryDate: KhmerLunarBoundaryDate,
+): Date {
+  const cursor = new Date(year, SONGKRAN_SEARCH_START_MONTH, SONGKRAN_SEARCH_START_DAY);
+  const end = new Date(year, SONGKRAN_SEARCH_END_MONTH, SONGKRAN_SEARCH_END_DAY);
+
+  while (cursor <= end) {
+    const normalized = cloneDate(cursor);
+    const khmerCivilDate = getKhmerCivilDate(normalized);
+
+    if (
+      khmerCivilDate.khmerMonth === boundaryDate.khmerMonth &&
+      khmerCivilDate.monthDay === boundaryDate.monthDay
+    ) {
+      return normalized;
+    }
+
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  throw new Error(`Unable to locate Khmer boundary date for Gregorian year ${year}.`);
+}
+
+function reduceRasey(rasey: number, angsa: number, liba: number): [number, number, number] {
+  let nextRasey = rasey;
+  let nextAngsa = angsa;
+  let nextLiba = liba;
+
+  while (nextLiba >= 60) {
+    nextLiba -= 60;
+    nextAngsa += 1;
+  }
+
+  while (nextLiba < 0) {
+    nextLiba += 60;
+    nextAngsa -= 1;
+  }
+
+  while (nextAngsa >= 30) {
+    nextAngsa -= 30;
+    nextRasey += 1;
+  }
+
+  while (nextAngsa < 0) {
+    nextAngsa += 30;
+    nextRasey -= 1;
+  }
+
+  nextRasey = mod(nextRasey, 12);
+
+  return [nextRasey, nextAngsa, nextLiba];
+}
+
+function addRasey(a: [number, number, number], b: [number, number, number]): [number, number, number] {
+  return reduceRasey(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
+}
+
+function subtractRasey(
+  minuend: [number, number, number],
+  subtrahend: [number, number, number],
+): [number, number, number] {
+  return reduceRasey(
+    minuend[0] - subtrahend[0],
+    minuend[1] - subtrahend[1],
+    minuend[2] - subtrahend[2],
+  );
+}
+
+function getKromtupol(jolakSakarajYear: number): number {
+  const total = jolakSakarajYear * 292207 + 373;
+  return 800 - mod(total, 800);
+}
+
+function getMatyom(kromtupol: number, sotin: number): [number, number, number] {
+  const total = sotin * 800 + kromtupol;
+  const rasey = Math.floor(total / 24350);
+  const mod1 = total % 24350;
+  const angsa = Math.floor(mod1 / 811);
+  const mod2 = mod1 % 811;
+  const liba = Math.floor(mod2 / 14) - 3;
+
+  return [rasey, angsa, liba];
+}
+
+function getPhalLumet(matyom: [number, number, number]): [number, number, number] {
+  const raseyDiff = matyom[0] - 2;
+  const angsaDiff = matyom[1] - 20;
+  const ken: [number, number, number] = [raseyDiff, angsaDiff, matyom[2]];
+  let phal: [number, number, number];
+
+  switch (raseyDiff) {
+    case 0:
+    case 1:
+    case 2:
+      phal = [raseyDiff, 0, 0];
+      break;
+    case 3:
+    case 4:
+    case 5:
+      phal = subtractRasey([5, 29, 60], ken);
+      break;
+    case 6:
+    case 7:
+    case 8:
+      phal = subtractRasey(ken, [6, 0, 0]);
+      break;
+    default:
+      phal = subtractRasey([11, 29, 60], ken);
+      break;
+  }
+
+  const kon = phal[0] * 2 + 1;
+  const total = ((phal[1] - 15) * 60 + 30) * kon;
+  const lup = Math.floor(total / 900);
+  const withChaya = lup + 129;
+
+  return [0, Math.floor(withChaya / 60), withChaya % 60];
+}
+
+function getSomphotSun(
+  matyom: [number, number, number],
+  phalLumet: [number, number, number],
+): [number, number, number] {
+  return addRasey(matyom, phalLumet);
+}
+
+function hasDuplicateAngsa(values: Array<[number, number, number]>): boolean {
+  const counts = new Map<number, number>();
+
+  for (const value of values) {
+    counts.set(value[1], (counts.get(value[1]) ?? 0) + 1);
+  }
+
+  return Array.from(counts.values()).some((count) => count > 1);
+}
+
+function getSongkranVonobotDays(year: number): number {
+  const jolakSakarajYear = year - 638;
+  const kromtupol = getKromtupol(jolakSakarajYear - 1);
+  const somphotValues: Array<[number, number, number]> = [];
+
+  for (let offset = 0; offset < 4; offset += 1) {
+    const matyom = getMatyom(kromtupol, 363 + offset);
+    const phalLumet = getPhalLumet(matyom);
+    somphotValues.push(getSomphotSun(matyom, phalLumet));
+  }
+
+  return hasDuplicateAngsa(somphotValues) ? 2 : 1;
+}
+
+function getLeungsakLunarDate(year: number): KhmerLunarBoundaryDate {
+  const bodithey = getBodithey(year);
+
+  if (bodithey >= 6) {
+    return {
+      khmerMonth: 'ចេត្រ',
+      monthDay: bodithey + (getBoditheyLeapType(year - 1) === 3 ? 1 : 0),
+    };
+  }
+
+  return {
+    khmerMonth: 'ពិសាខ',
+    monthDay: bodithey + 1,
+  };
+}
+
+function getKhmerNewYearInfo(year: number): KhmerNewYearInfo {
+  const cached = khmerNewYearCache.get(year);
+
+  if (cached) {
+    return {
+      gregorianStartDate: cloneDate(cached.gregorianStartDate),
+      totalDays: cached.totalDays,
+    };
+  }
+
+  const vonobotDays = getSongkranVonobotDays(year);
+  const leungsakGregorianDate = findGregorianDateForKhmerCivilDate(year, getLeungsakLunarDate(year));
+  const info = {
+    gregorianStartDate: addDays(leungsakGregorianDate, -(vonobotDays + 1)),
+    totalDays: vonobotDays + 2,
+  };
+
+  khmerNewYearCache.set(year, info);
+
+  return {
+    gregorianStartDate: cloneDate(info.gregorianStartDate),
+    totalDays: info.totalDays,
+  };
+}
+
+function getKhmerReferenceYear(date: Date): number {
+  const year = date.getFullYear();
+  const { gregorianStartDate } = getKhmerNewYearInfo(year);
+
+  return isSameOrAfterDate(date, gregorianStartDate) ? year : year - 1;
 }
 
 function getAnimalYearForReferenceYear(referenceYear: number): AnimalYear {
@@ -366,6 +575,22 @@ function getKhmerCivilDate(date: Date): KhmerCivilDate {
   };
 }
 
+function getFirstDayOfVesak(year: number): Date {
+  const cached = vesakBoundaryCache.get(year);
+
+  if (cached) {
+    return cloneDate(cached);
+  }
+
+  const boundary = findGregorianDateForKhmerCivilDate(year, {
+    khmerMonth: 'ពិសាខ',
+    monthDay: 1,
+  });
+
+  vesakBoundaryCache.set(year, boundary);
+  return cloneDate(boundary);
+}
+
 function getMoonPhase(monthDay: number): {
   moonStatus: KhmerLunarDate['moonStatus'];
   moonDay: number;
@@ -380,10 +605,6 @@ function getMoonPhase(monthDay: number): {
 
 function isLeapAsadhaMonth(khmerMonth: KhmerMonth): boolean {
   return khmerMonth === 'បឋមាសាឍ' || khmerMonth === 'ទុតិយាសាឍ';
-}
-
-function isChetMonth(khmerMonth: KhmerMonth): boolean {
-  return khmerMonth === 'ចេត្រ';
 }
 
 function isBuddhistHolyDay(monthDay: number, monthLength: number): boolean {
@@ -411,10 +632,9 @@ function convertCore(date: Date): Omit<KhmerLunarDate, 'holidays'> {
   const referenceYear = getKhmerReferenceYear(date);
   const khmerCivilDate = getKhmerCivilDate(date);
   const { moonStatus, moonDay } = getMoonPhase(khmerCivilDate.monthDay);
-  const buddhistEraYear =
-    isOnOrAfterKhmerNewYear(date) && isChetMonth(khmerCivilDate.khmerMonth)
-      ? referenceYear + 543
-      : referenceYear + 544;
+  const buddhistEraYear = isSameOrAfterDate(date, getFirstDayOfVesak(date.getFullYear()))
+    ? date.getFullYear() + 544
+    : date.getFullYear() + 543;
   const khmerYear = buddhistEraYear;
   const animalYear = getAnimalYearForReferenceYear(referenceYear);
   const sak = getSakForReferenceYear(referenceYear);
@@ -546,12 +766,11 @@ function cloneHolidays(holidays: KhmerHoliday[]): KhmerHoliday[] {
 }
 
 function getKhmerNewYearHolidays(year: number): KhmerHoliday[] {
-  const startDay = year % 4 === 0 ? 13 : 14;
-  const totalDays = year % 4 === 0 ? 4 : 3;
+  const { gregorianStartDate, totalDays } = getKhmerNewYearInfo(year);
 
   return Array.from({ length: totalDays }, (_, index) =>
     createHoliday(
-      `${year}-04-${String(startDay + index).padStart(2, '0')}`,
+      formatISODate(addDays(gregorianStartDate, index)),
       'បុណ្យចូលឆ្នាំខ្មែរ',
       'Khmer New Year',
       'public',
@@ -570,10 +789,10 @@ function buildHolidaysForYear(year: number): KhmerHoliday[] {
 /**
  * Converts a Gregorian date to a Khmer lunar date.
  *
- * This implementation is dynamic and uses astronomical new-moon estimation plus
- * Khmer New Year year-cycle rules. It is a major upgrade over the previous placeholder
- * implementation, though highly specialized edge cases of the traditional calendar may
- * still benefit from future refinement.
+ * This implementation derives Khmer civil dates from the traditional year-type
+ * rules and computes Songkran-based Khmer New Year dates for year-boundary logic.
+ * Highly specialized edge cases of the traditional calendar may still benefit
+ * from future refinement.
  */
 export function toKhmerLunarDate(inputDate: Date | string | number): KhmerLunarDate {
   const date = normalizeDate(inputDate);
@@ -609,8 +828,12 @@ export function isSilDay(inputDate: Date | string | number): boolean {
 }
 
 export function getKhmerHolidays(year: number): KhmerHoliday[] {
-  if (!Number.isInteger(year) || year < 1) {
+  if (!Number.isInteger(year)) {
     throw new Error('Invalid year provided.');
+  }
+
+  if (year < MIN_SUPPORTED_GREGORIAN_YEAR) {
+    throw new Error(`Year must be ${MIN_SUPPORTED_GREGORIAN_YEAR} or later.`);
   }
 
   const cached = holidayCache.get(year);

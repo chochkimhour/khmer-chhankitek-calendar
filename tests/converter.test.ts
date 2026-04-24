@@ -24,6 +24,11 @@ describe('converter', () => {
     expect(() => toKhmerLunarDate('2026-02-30')).toThrow('Invalid date provided.');
   });
 
+  it('rejects Gregorian dates before the supported epoch', () => {
+    expect(() => toKhmerLunarDate('1899-12-31')).toThrow('Dates before 1900-01-01 are not supported.');
+    expect(() => getKhmerHolidays(1899)).toThrow('Year must be 1900 or later.');
+  });
+
   it('returns dynamic Khmer lunar data for a known real-world date', () => {
     const result = toKhmerLunarDate('2025-07-01');
 
@@ -87,6 +92,16 @@ describe('converter', () => {
     expect(result.buddhistEraYear).toBe(2569);
   });
 
+  it('uses the computed Songkran date for Khmer New Year boundaries', () => {
+    const beforeBoundary = toKhmerLunarDate('2024-04-12');
+    const onBoundary = toKhmerLunarDate('2024-04-13');
+
+    expect(beforeBoundary.animalYear).toBe('ថោះ');
+    expect(beforeBoundary.sak).toBe('បញ្ចស័ក');
+    expect(onBoundary.animalYear).toBe('រោង');
+    expect(onBoundary.sak).toBe('ឆស័ក');
+  });
+
   it('keeps Buddhist Era year in the old year until Chet finishes', () => {
     const result = toKhmerLunarDate('2026-04-16');
 
@@ -100,6 +115,16 @@ describe('converter', () => {
     expect(result.fullText).toBe(
       'ថ្ងៃព្រហស្បតិ៍ ១៤រោច ខែចេត្រ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១៦ ខែមេសា ឆ្នាំ២០២៦',
     );
+  });
+
+  it('moves Buddhist Era year at the Vesak month boundary', () => {
+    const beforeBoundary = toKhmerLunarDate('2026-04-16');
+    const onBoundary = toKhmerLunarDate('2026-04-17');
+
+    expect(beforeBoundary.khmerMonth).toBe('ចេត្រ');
+    expect(beforeBoundary.buddhistEraYear).toBe(2569);
+    expect(onBoundary.khmerMonth).toBe('ពិសាខ');
+    expect(onBoundary.buddhistEraYear).toBe(2570);
   });
 
   it('exposes helper accessors', () => {
@@ -138,7 +163,10 @@ describe('converter', () => {
     const holidays2024 = getKhmerHolidays(2024).filter(
       (holiday) => holiday.nameEn === 'Khmer New Year',
     );
-    const holidays2026 = getKhmerHolidays(2026).filter(
+    const holidays2025 = getKhmerHolidays(2025).filter(
+      (holiday) => holiday.nameEn === 'Khmer New Year',
+    );
+    const holidays2028 = getKhmerHolidays(2028).filter(
       (holiday) => holiday.nameEn === 'Khmer New Year',
     );
 
@@ -148,10 +176,12 @@ describe('converter', () => {
       '2024-04-15',
       '2024-04-16',
     ]);
-    expect(holidays2026.map((holiday) => holiday.date)).toEqual([
-      '2026-04-14',
-      '2026-04-15',
-      '2026-04-16',
+    expect(holidays2025.map((holiday) => holiday.date)).toEqual(['2025-04-14', '2025-04-15', '2025-04-16']);
+    expect(holidays2028.map((holiday) => holiday.date)).toEqual([
+      '2028-04-13',
+      '2028-04-14',
+      '2028-04-15',
+      '2028-04-16',
     ]);
   });
 
