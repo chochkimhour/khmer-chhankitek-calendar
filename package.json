@@ -30,13 +30,26 @@
     "khmer",
     "calendar",
     "chhankitek",
+    "chankitek",
+    "khmer-calendar",
+    "khmer-lunar-calendar",
     "lunar",
+    "lunar-calendar",
     "cambodia",
+    "cambodian-calendar",
     "date",
     "typescript"
   ],
   "author": "Choch Kimhour <Cambodia>",
   "license": "MIT",
+  "homepage": "https://www.npmjs.com/package/khmer-chhankitek-calendar",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/chochkimhour/khmer-chhankitek-calendar.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/chochkimhour/khmer-chhankitek-calendar/-/issues"
+  },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
     "@types/node": "^20.0.0",
