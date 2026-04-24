@@ -1,6 +1,6 @@
 {
   "name": "khmer-chhankitek-calendar",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A clean, accurate, framework-agnostic TypeScript library for converting Gregorian dates to Khmer Chhankitek / Khmer lunar calendar dates.",
   "type": "module",
   "sideEffects": false,
