@@ -109,7 +109,7 @@ describe('converter', () => {
     expect(isSilDay('2026-05-01')).toBe(true);
   });
 
-  it('returns dynamic and official holidays for a year', () => {
+  it('returns fixed and dynamic holidays for a year', () => {
     const holidays = getKhmerHolidays(2026);
 
     expect(hasHoliday(holidays, '2026-04-14', 'Khmer New Year')).toBe(true);
@@ -118,6 +118,20 @@ describe('converter', () => {
     expect(hasHoliday(holidays, '2026-10-12', 'Pchum Ben Festival')).toBe(true);
     expect(hasHoliday(holidays, '2026-11-25', 'Water Festival')).toBe(true);
     expect(hasHoliday(holidays, '2026-12-29', 'Peace Day in Cambodia')).toBe(true);
+  });
+
+  it('generates public lunar holidays dynamically for future years', () => {
+    const holidays = getKhmerHolidays(2027);
+
+    expect(hasHoliday(holidays, '2027-05-20', 'Visak Bochea Day')).toBe(true);
+    expect(hasHoliday(holidays, '2027-05-24', 'Royal Ploughing Ceremony')).toBe(true);
+    expect(hasHoliday(holidays, '2027-09-29', 'Pchum Ben Festival')).toBe(true);
+    expect(hasHoliday(holidays, '2027-09-30', 'Pchum Ben Festival')).toBe(true);
+    expect(hasHoliday(holidays, '2027-10-01', 'Pchum Ben Festival')).toBe(true);
+    expect(hasHoliday(holidays, '2027-11-12', 'Water Festival')).toBe(true);
+    expect(hasHoliday(holidays, '2027-11-13', 'Water Festival')).toBe(true);
+    expect(hasHoliday(holidays, '2027-11-14', 'Water Festival')).toBe(true);
+    expect(hasHoliday(holidays, '2027-12-29', 'Peace Day in Cambodia')).toBe(true);
   });
 
   it('uses four Khmer New Year days in Gregorian leap years', () => {
@@ -148,7 +162,7 @@ describe('converter', () => {
     expect(getKhmerHolidays(2026).length).toBeGreaterThan(0);
   });
 
-  it('deduplicates official holiday overrides by date and English name', () => {
+  it('deduplicates holidays by date and English name', () => {
     const holidays = toKhmerLunarDate('2026-06-18').holidays;
 
     expect(holidays.filter((holiday) => holiday.nameEn === "Queen Mother's Birthday")).toHaveLength(

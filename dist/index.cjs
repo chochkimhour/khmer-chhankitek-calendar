@@ -252,52 +252,56 @@ var LEAP_MONTHS_BY_NUMBER = [
   "\u1780\u178F\u17D2\u178F\u17B7\u1780"
 ];
 var holidayCache = /* @__PURE__ */ new Map();
-var OFFICIAL_PUBLIC_HOLIDAY_OVERRIDES = {
-  2026: [
-    createHoliday("2026-01-01", "\u1794\u17BB\u178E\u17D2\u1799\u1785\u17BC\u179B\u1786\u17D2\u1793\u17B6\u17C6\u179F\u1780\u179B", "International New Year's Day", "public"),
-    createHoliday(
-      "2026-01-07",
-      "\u1791\u17B7\u179C\u17B6\u1787\u17D0\u1799\u1787\u1798\u17D2\u1793\u17C7\u179B\u17BE\u179A\u1794\u1794\u1794\u17D2\u179A\u179B\u17D0\u1799\u1796\u17BC\u1787\u179F\u17B6\u179F\u1793\u17CD",
-      "Victory over Genocide Day",
-      "public"
-    ),
-    createHoliday("2026-03-08", "\u1791\u17B7\u179C\u17B6\u1793\u17B6\u179A\u17B8\u17A2\u1793\u17D2\u178F\u179A\u1787\u17B6\u178F\u17B7", "International Women's Day", "public"),
-    createHoliday("2026-04-14", "\u1794\u17BB\u178E\u17D2\u1799\u1785\u17BC\u179B\u1786\u17D2\u1793\u17B6\u17C6\u1781\u17D2\u1798\u17C2\u179A", "Khmer New Year", "public"),
-    createHoliday("2026-04-15", "\u1794\u17BB\u178E\u17D2\u1799\u1785\u17BC\u179B\u1786\u17D2\u1793\u17B6\u17C6\u1781\u17D2\u1798\u17C2\u179A", "Khmer New Year", "public"),
-    createHoliday("2026-04-16", "\u1794\u17BB\u178E\u17D2\u1799\u1785\u17BC\u179B\u1786\u17D2\u1793\u17B6\u17C6\u1781\u17D2\u1798\u17C2\u179A", "Khmer New Year", "public"),
-    createHoliday("2026-05-01", "\u1791\u17B7\u179C\u17B6\u1796\u179B\u1780\u1798\u17D2\u1798\u17A2\u1793\u17D2\u178F\u179A\u1787\u17B6\u178F\u17B7", "International Labour Day", "public"),
-    createHoliday("2026-05-01", "\u179C\u17B7\u179F\u17B6\u1781\u1794\u17BC\u1787\u17B6", "Visak Bochea Day", "public"),
-    createHoliday("2026-05-05", "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1785\u17D2\u179A\u178F\u17CB\u1796\u17D2\u179A\u17C7\u1793\u1784\u17D2\u1782\u17D0\u179B", "Royal Ploughing Ceremony", "public"),
-    createHoliday(
-      "2026-05-14",
-      "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1785\u1798\u17D2\u179A\u17BE\u1793\u1796\u17D2\u179A\u17C7\u1787\u1793\u17D2\u1798 \u1796\u17D2\u179A\u17C7\u1798\u17A0\u17B6\u1780\u17D2\u179F\u178F\u17D2\u179A",
-      "King's Birthday",
-      "public"
-    ),
-    createHoliday(
-      "2026-06-18",
-      "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1785\u1798\u17D2\u179A\u17BE\u1793\u1796\u17D2\u179A\u17C7\u1787\u1793\u17D2\u1798 \u179F\u1798\u17D2\u178F\u17C1\u1785\u1796\u17D2\u179A\u17C7\u1798\u17A0\u17B6\u1780\u17D2\u179F\u178F\u17D2\u179A\u17B8",
-      "Queen Mother's Birthday",
-      "public"
-    ),
-    createHoliday("2026-09-24", "\u1791\u17B7\u179C\u17B6\u179A\u178A\u17D2\u178B\u1792\u1798\u17D2\u1798\u1793\u17BB\u1789\u17D2\u1789", "Constitution Day", "public"),
-    createHoliday("2026-10-10", "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1794\u17BB\u178E\u17D2\u1799\u1797\u17D2\u1787\u17BB\u17C6\u1794\u17B7\u178E\u17D2\u178C", "Pchum Ben Festival", "public"),
-    createHoliday("2026-10-11", "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1794\u17BB\u178E\u17D2\u1799\u1797\u17D2\u1787\u17BB\u17C6\u1794\u17B7\u178E\u17D2\u178C", "Pchum Ben Festival", "public"),
-    createHoliday("2026-10-12", "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1794\u17BB\u178E\u17D2\u1799\u1797\u17D2\u1787\u17BB\u17C6\u1794\u17B7\u178E\u17D2\u178C", "Pchum Ben Festival", "public"),
-    createHoliday(
-      "2026-10-15",
-      "\u1791\u17B7\u179C\u17B6\u1782\u17C4\u179A\u1796\u1796\u17D2\u179A\u17C7\u179C\u17B7\u1789\u17D2\u1789\u17B6\u178E\u1780\u17D2\u1781\u1793\u17D2\u1792 \u1796\u17D2\u179A\u17C7\u1794\u179A\u1798\u179A\u178F\u1793\u1780\u17C4\u178A\u17D2\u178B",
-      "Commemoration Day of King's Father",
-      "public"
-    ),
-    createHoliday("2026-10-29", "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1782\u17D2\u179A\u1784\u179A\u17B6\u1787\u17D2\u1799", "Coronation Day", "public"),
-    createHoliday("2026-11-09", "\u1794\u17BB\u178E\u17D2\u1799\u17AF\u1780\u179A\u17B6\u1787\u17D2\u1799\u1787\u17B6\u178F\u17B7", "Independence Day", "public"),
-    createHoliday("2026-11-23", "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1794\u17BB\u178E\u17D2\u1799\u17A2\u17BB\u17C6\u1791\u17BC\u1780", "Water Festival", "public"),
-    createHoliday("2026-11-24", "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1794\u17BB\u178E\u17D2\u1799\u17A2\u17BB\u17C6\u1791\u17BC\u1780", "Water Festival", "public"),
-    createHoliday("2026-11-25", "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1794\u17BB\u178E\u17D2\u1799\u17A2\u17BB\u17C6\u1791\u17BC\u1780", "Water Festival", "public"),
-    createHoliday("2026-12-29", "\u1791\u17B7\u179C\u17B6\u179F\u1793\u17D2\u178F\u17B7\u1797\u17B6\u1796\u1793\u17C5\u1780\u1798\u17D2\u1796\u17BB\u1787\u17B6", "Peace Day in Cambodia", "public")
-  ]
-};
+var DYNAMIC_LUNAR_HOLIDAY_RULES = [
+  {
+    nameKm: "\u1798\u17B6\u1783\u1794\u17BC\u1787\u17B6",
+    nameEn: "Meak Bochea",
+    type: "religious",
+    matches: (lunarDate) => lunarDate.khmerMonth === "\u1798\u17B6\u1783" && lunarDate.moonStatus === "\u1780\u17BE\u178F" && lunarDate.moonDay === 15
+  },
+  {
+    nameKm: "\u179C\u17B7\u179F\u17B6\u1781\u1794\u17BC\u1787\u17B6",
+    nameEn: "Visak Bochea",
+    type: "religious",
+    matches: (lunarDate) => lunarDate.khmerMonth === "\u1796\u17B7\u179F\u17B6\u1781" && lunarDate.moonStatus === "\u1780\u17BE\u178F" && lunarDate.moonDay === 15
+  },
+  {
+    nameKm: "\u179C\u17B7\u179F\u17B6\u1781\u1794\u17BC\u1787\u17B6",
+    nameEn: "Visak Bochea Day",
+    type: "public",
+    matches: (lunarDate) => lunarDate.khmerMonth === "\u1796\u17B7\u179F\u17B6\u1781" && lunarDate.moonStatus === "\u1780\u17BE\u178F" && lunarDate.moonDay === 15
+  },
+  {
+    nameKm: "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1785\u17D2\u179A\u178F\u17CB\u1796\u17D2\u179A\u17C7\u1793\u1784\u17D2\u1782\u17D0\u179B",
+    nameEn: "Royal Ploughing Ceremony",
+    type: "public",
+    matches: (lunarDate) => lunarDate.khmerMonth === "\u1796\u17B7\u179F\u17B6\u1781" && lunarDate.moonStatus === "\u179A\u17C4\u1785" && lunarDate.moonDay === 4
+  },
+  {
+    nameKm: "\u1797\u17D2\u1787\u17BB\u17C6\u1794\u17B7\u178E\u17D2\u178C",
+    nameEn: "Pchum Ben",
+    type: "religious",
+    matches: (lunarDate) => lunarDate.khmerMonth === "\u1797\u1791\u17D2\u179A\u1794\u1791" && lunarDate.moonStatus === "\u179A\u17C4\u1785" && lunarDate.moonDay === 15
+  },
+  {
+    nameKm: "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1794\u17BB\u178E\u17D2\u1799\u1797\u17D2\u1787\u17BB\u17C6\u1794\u17B7\u178E\u17D2\u178C",
+    nameEn: "Pchum Ben Festival",
+    type: "public",
+    matches: (lunarDate) => lunarDate.khmerMonth === "\u1797\u1791\u17D2\u179A\u1794\u1791" && lunarDate.moonStatus === "\u179A\u17C4\u1785" && [14, 15].includes(lunarDate.moonDay) || lunarDate.khmerMonth === "\u17A2\u179F\u17D2\u179F\u17BB\u1787" && lunarDate.moonStatus === "\u1780\u17BE\u178F" && lunarDate.moonDay === 1
+  },
+  {
+    nameKm: "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1794\u17BB\u178E\u17D2\u1799\u17A2\u17BB\u17C6\u1791\u17BC\u1780",
+    nameEn: "Water Festival",
+    type: "traditional",
+    matches: (lunarDate) => lunarDate.khmerMonth === "\u1780\u178F\u17D2\u178F\u17B7\u1780" && lunarDate.moonStatus === "\u1780\u17BE\u178F" && [14, 15].includes(lunarDate.moonDay)
+  },
+  {
+    nameKm: "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1794\u17BB\u178E\u17D2\u1799\u17A2\u17BB\u17C6\u1791\u17BC\u1780",
+    nameEn: "Water Festival",
+    type: "public",
+    matches: (lunarDate) => lunarDate.khmerMonth === "\u1780\u178F\u17D2\u178F\u17B7\u1780" && (lunarDate.moonStatus === "\u1780\u17BE\u178F" && [14, 15].includes(lunarDate.moonDay) || lunarDate.moonStatus === "\u179A\u17C4\u1785" && lunarDate.moonDay === 1)
+  }
+];
 function mod(value, divisor) {
   return (value % divisor + divisor) % divisor;
 }
@@ -532,32 +536,14 @@ function addHoliday(accumulator, holiday) {
     accumulator[existingIndex] = holiday;
   }
 }
-function addHolidayIfMatch(accumulator, lunarDate, gregorianDate) {
-  if (lunarDate.khmerMonth === "\u1798\u17B6\u1783" && lunarDate.moonStatus === "\u1780\u17BE\u178F" && lunarDate.moonDay === 15) {
-    addHoliday(accumulator, createHoliday(gregorianDate, "\u1798\u17B6\u1783\u1794\u17BC\u1787\u17B6", "Meak Bochea", "religious"));
-  }
-  if (lunarDate.khmerMonth === "\u1796\u17B7\u179F\u17B6\u1781" && lunarDate.moonStatus === "\u1780\u17BE\u178F" && lunarDate.moonDay === 15) {
-    addHoliday(accumulator, createHoliday(gregorianDate, "\u179C\u17B7\u179F\u17B6\u1781\u1794\u17BC\u1787\u17B6", "Visak Bochea", "religious"));
-  }
-  if (lunarDate.khmerMonth === "\u1796\u17B7\u179F\u17B6\u1781" && lunarDate.moonStatus === "\u179A\u17C4\u1785" && lunarDate.moonDay === 4) {
-    addHoliday(
-      accumulator,
-      createHoliday(
-        gregorianDate,
-        "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1785\u17D2\u179A\u178F\u17CB\u1796\u17D2\u179A\u17C7\u1793\u1784\u17D2\u1782\u17D0\u179B",
-        "Royal Ploughing Ceremony",
-        "traditional"
-      )
-    );
-  }
-  if (lunarDate.khmerMonth === "\u1797\u1791\u17D2\u179A\u1794\u1791" && lunarDate.moonStatus === "\u179A\u17C4\u1785" && lunarDate.moonDay === 15) {
-    addHoliday(accumulator, createHoliday(gregorianDate, "\u1797\u17D2\u1787\u17BB\u17C6\u1794\u17B7\u178E\u17D2\u178C", "Pchum Ben", "religious"));
-  }
-  if (lunarDate.khmerMonth === "\u1780\u178F\u17D2\u178F\u17B7\u1780" && lunarDate.moonStatus === "\u1780\u17BE\u178F" && [14, 15].includes(lunarDate.moonDay)) {
-    addHoliday(
-      accumulator,
-      createHoliday(gregorianDate, "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1794\u17BB\u178E\u17D2\u1799\u17A2\u17BB\u17C6\u1791\u17BC\u1780", "Water Festival", "traditional")
-    );
+function addDynamicLunarHolidaysForDate(accumulator, lunarDate, gregorianDate) {
+  for (const rule of DYNAMIC_LUNAR_HOLIDAY_RULES) {
+    if (rule.matches(lunarDate)) {
+      addHoliday(
+        accumulator,
+        createHoliday(gregorianDate, rule.nameKm, rule.nameEn, rule.type)
+      );
+    }
   }
 }
 function getFixedPublicHolidays(year) {
@@ -592,7 +578,8 @@ function getFixedPublicHolidays(year) {
       "public"
     ),
     createHoliday(`${year}-10-29`, "\u1796\u17D2\u179A\u17C7\u179A\u17B6\u1787\u1796\u17B7\u1792\u17B8\u1782\u17D2\u179A\u1784\u179A\u17B6\u1787\u17D2\u1799", "Coronation Day", "public"),
-    createHoliday(`${year}-11-09`, "\u1794\u17BB\u178E\u17D2\u1799\u17AF\u1780\u179A\u17B6\u1787\u17D2\u1799\u1787\u17B6\u178F\u17B7", "Independence Day", "public")
+    createHoliday(`${year}-11-09`, "\u1794\u17BB\u178E\u17D2\u1799\u17AF\u1780\u179A\u17B6\u1787\u17D2\u1799\u1787\u17B6\u178F\u17B7", "Independence Day", "public"),
+    createHoliday(`${year}-12-29`, "\u1791\u17B7\u179C\u17B6\u179F\u1793\u17D2\u178F\u17B7\u1797\u17B6\u1796\u1793\u17C5\u1780\u1798\u17D2\u1796\u17BB\u1787\u17B6", "Peace Day in Cambodia", "public")
   ];
 }
 function addDynamicLunarHolidays(year, holidays) {
@@ -601,13 +588,9 @@ function addDynamicLunarHolidays(year, holidays) {
   while (cursor <= end) {
     const normalized = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
     const lunarDate = convertCore(normalized);
-    addHolidayIfMatch(holidays, lunarDate, formatISODate(normalized));
+    const gregorianDate = formatISODate(normalized);
+    addDynamicLunarHolidaysForDate(holidays, lunarDate, gregorianDate);
     cursor.setDate(cursor.getDate() + 1);
-  }
-}
-function addOfficialHolidayOverrides(year, holidays) {
-  for (const holiday of OFFICIAL_PUBLIC_HOLIDAY_OVERRIDES[year] ?? []) {
-    addHoliday(holidays, cloneHoliday(holiday));
   }
 }
 function cloneHolidays(holidays) {
@@ -629,7 +612,6 @@ function getKhmerNewYearHolidays(year) {
 function buildHolidaysForYear(year) {
   const holidays = getFixedPublicHolidays(year);
   addDynamicLunarHolidays(year, holidays);
-  addOfficialHolidayOverrides(year, holidays);
   return holidays.sort((a, b) => a.date.localeCompare(b.date));
 }
 function toKhmerLunarDate(inputDate) {

@@ -29,6 +29,13 @@ interface KhmerCivilDate {
   yearType: KhmerYearType;
 }
 
+interface DynamicHolidayRule {
+  nameKm: string;
+  nameEn: string;
+  type: KhmerHoliday['type'];
+  matches: (lunarDate: Omit<KhmerLunarDate, 'holidays'>) => boolean;
+}
+
 const NORMAL_MONTHS_BY_NUMBER: KhmerMonth[] = [
   'មិគសិរ',
   'បុស្ស',
@@ -62,52 +69,83 @@ const LEAP_MONTHS_BY_NUMBER: KhmerMonth[] = [
 
 const holidayCache = new Map<number, KhmerHoliday[]>();
 
-const OFFICIAL_PUBLIC_HOLIDAY_OVERRIDES: Record<number, KhmerHoliday[]> = {
-  2026: [
-    createHoliday('2026-01-01', 'បុណ្យចូលឆ្នាំសកល', "International New Year's Day", 'public'),
-    createHoliday(
-      '2026-01-07',
-      'ទិវាជ័យជម្នះលើរបបប្រល័យពូជសាសន៍',
-      'Victory over Genocide Day',
-      'public',
-    ),
-    createHoliday('2026-03-08', 'ទិវានារីអន្តរជាតិ', "International Women's Day", 'public'),
-    createHoliday('2026-04-14', 'បុណ្យចូលឆ្នាំខ្មែរ', 'Khmer New Year', 'public'),
-    createHoliday('2026-04-15', 'បុណ្យចូលឆ្នាំខ្មែរ', 'Khmer New Year', 'public'),
-    createHoliday('2026-04-16', 'បុណ្យចូលឆ្នាំខ្មែរ', 'Khmer New Year', 'public'),
-    createHoliday('2026-05-01', 'ទិវាពលកម្មអន្តរជាតិ', 'International Labour Day', 'public'),
-    createHoliday('2026-05-01', 'វិសាខបូជា', 'Visak Bochea Day', 'public'),
-    createHoliday('2026-05-05', 'ព្រះរាជពិធីច្រត់ព្រះនង្គ័ល', 'Royal Ploughing Ceremony', 'public'),
-    createHoliday(
-      '2026-05-14',
-      'ព្រះរាជពិធីចម្រើនព្រះជន្ម ព្រះមហាក្សត្រ',
-      "King's Birthday",
-      'public',
-    ),
-    createHoliday(
-      '2026-06-18',
-      'ព្រះរាជពិធីចម្រើនព្រះជន្ម សម្តេចព្រះមហាក្សត្រី',
-      "Queen Mother's Birthday",
-      'public',
-    ),
-    createHoliday('2026-09-24', 'ទិវារដ្ឋធម្មនុញ្ញ', 'Constitution Day', 'public'),
-    createHoliday('2026-10-10', 'ព្រះរាជពិធីបុណ្យភ្ជុំបិណ្ឌ', 'Pchum Ben Festival', 'public'),
-    createHoliday('2026-10-11', 'ព្រះរាជពិធីបុណ្យភ្ជុំបិណ្ឌ', 'Pchum Ben Festival', 'public'),
-    createHoliday('2026-10-12', 'ព្រះរាជពិធីបុណ្យភ្ជុំបិណ្ឌ', 'Pchum Ben Festival', 'public'),
-    createHoliday(
-      '2026-10-15',
-      'ទិវាគោរពព្រះវិញ្ញាណក្ខន្ធ ព្រះបរមរតនកោដ្ឋ',
-      "Commemoration Day of King's Father",
-      'public',
-    ),
-    createHoliday('2026-10-29', 'ព្រះរាជពិធីគ្រងរាជ្យ', 'Coronation Day', 'public'),
-    createHoliday('2026-11-09', 'បុណ្យឯករាជ្យជាតិ', 'Independence Day', 'public'),
-    createHoliday('2026-11-23', 'ព្រះរាជពិធីបុណ្យអុំទូក', 'Water Festival', 'public'),
-    createHoliday('2026-11-24', 'ព្រះរាជពិធីបុណ្យអុំទូក', 'Water Festival', 'public'),
-    createHoliday('2026-11-25', 'ព្រះរាជពិធីបុណ្យអុំទូក', 'Water Festival', 'public'),
-    createHoliday('2026-12-29', 'ទិវាសន្តិភាពនៅកម្ពុជា', 'Peace Day in Cambodia', 'public'),
-  ],
-};
+const DYNAMIC_LUNAR_HOLIDAY_RULES: DynamicHolidayRule[] = [
+  {
+    nameKm: 'មាឃបូជា',
+    nameEn: 'Meak Bochea',
+    type: 'religious',
+    matches: (lunarDate) =>
+      lunarDate.khmerMonth === 'មាឃ' &&
+      lunarDate.moonStatus === 'កើត' &&
+      lunarDate.moonDay === 15,
+  },
+  {
+    nameKm: 'វិសាខបូជា',
+    nameEn: 'Visak Bochea',
+    type: 'religious',
+    matches: (lunarDate) =>
+      lunarDate.khmerMonth === 'ពិសាខ' &&
+      lunarDate.moonStatus === 'កើត' &&
+      lunarDate.moonDay === 15,
+  },
+  {
+    nameKm: 'វិសាខបូជា',
+    nameEn: 'Visak Bochea Day',
+    type: 'public',
+    matches: (lunarDate) =>
+      lunarDate.khmerMonth === 'ពិសាខ' &&
+      lunarDate.moonStatus === 'កើត' &&
+      lunarDate.moonDay === 15,
+  },
+  {
+    nameKm: 'ព្រះរាជពិធីច្រត់ព្រះនង្គ័ល',
+    nameEn: 'Royal Ploughing Ceremony',
+    type: 'public',
+    matches: (lunarDate) =>
+      lunarDate.khmerMonth === 'ពិសាខ' &&
+      lunarDate.moonStatus === 'រោច' &&
+      lunarDate.moonDay === 4,
+  },
+  {
+    nameKm: 'ភ្ជុំបិណ្ឌ',
+    nameEn: 'Pchum Ben',
+    type: 'religious',
+    matches: (lunarDate) =>
+      lunarDate.khmerMonth === 'ភទ្របទ' &&
+      lunarDate.moonStatus === 'រោច' &&
+      lunarDate.moonDay === 15,
+  },
+  {
+    nameKm: 'ព្រះរាជពិធីបុណ្យភ្ជុំបិណ្ឌ',
+    nameEn: 'Pchum Ben Festival',
+    type: 'public',
+    matches: (lunarDate) =>
+      (lunarDate.khmerMonth === 'ភទ្របទ' &&
+        lunarDate.moonStatus === 'រោច' &&
+        [14, 15].includes(lunarDate.moonDay)) ||
+      (lunarDate.khmerMonth === 'អស្សុជ' &&
+        lunarDate.moonStatus === 'កើត' &&
+        lunarDate.moonDay === 1),
+  },
+  {
+    nameKm: 'ព្រះរាជពិធីបុណ្យអុំទូក',
+    nameEn: 'Water Festival',
+    type: 'traditional',
+    matches: (lunarDate) =>
+      lunarDate.khmerMonth === 'កត្តិក' &&
+      lunarDate.moonStatus === 'កើត' &&
+      [14, 15].includes(lunarDate.moonDay),
+  },
+  {
+    nameKm: 'ព្រះរាជពិធីបុណ្យអុំទូក',
+    nameEn: 'Water Festival',
+    type: 'public',
+    matches: (lunarDate) =>
+      lunarDate.khmerMonth === 'កត្តិក' &&
+      ((lunarDate.moonStatus === 'កើត' && [14, 15].includes(lunarDate.moonDay)) ||
+        (lunarDate.moonStatus === 'រោច' && lunarDate.moonDay === 1)),
+  },
+];
 
 function mod(value: number, divisor: number): number {
   return ((value % divisor) + divisor) % divisor;
@@ -438,60 +476,18 @@ function addHoliday(accumulator: KhmerHoliday[], holiday: KhmerHoliday): void {
   }
 }
 
-function addHolidayIfMatch(
+function addDynamicLunarHolidaysForDate(
   accumulator: KhmerHoliday[],
   lunarDate: Omit<KhmerLunarDate, 'holidays'>,
   gregorianDate: string,
 ): void {
-  if (
-    lunarDate.khmerMonth === 'មាឃ' &&
-    lunarDate.moonStatus === 'កើត' &&
-    lunarDate.moonDay === 15
-  ) {
-    addHoliday(accumulator, createHoliday(gregorianDate, 'មាឃបូជា', 'Meak Bochea', 'religious'));
-  }
-
-  if (
-    lunarDate.khmerMonth === 'ពិសាខ' &&
-    lunarDate.moonStatus === 'កើត' &&
-    lunarDate.moonDay === 15
-  ) {
-    addHoliday(accumulator, createHoliday(gregorianDate, 'វិសាខបូជា', 'Visak Bochea', 'religious'));
-  }
-
-  if (
-    lunarDate.khmerMonth === 'ពិសាខ' &&
-    lunarDate.moonStatus === 'រោច' &&
-    lunarDate.moonDay === 4
-  ) {
-    addHoliday(
-      accumulator,
-      createHoliday(
-        gregorianDate,
-        'ព្រះរាជពិធីច្រត់ព្រះនង្គ័ល',
-        'Royal Ploughing Ceremony',
-        'traditional',
-      ),
-    );
-  }
-
-  if (
-    lunarDate.khmerMonth === 'ភទ្របទ' &&
-    lunarDate.moonStatus === 'រោច' &&
-    lunarDate.moonDay === 15
-  ) {
-    addHoliday(accumulator, createHoliday(gregorianDate, 'ភ្ជុំបិណ្ឌ', 'Pchum Ben', 'religious'));
-  }
-
-  if (
-    lunarDate.khmerMonth === 'កត្តិក' &&
-    lunarDate.moonStatus === 'កើត' &&
-    [14, 15].includes(lunarDate.moonDay)
-  ) {
-    addHoliday(
-      accumulator,
-      createHoliday(gregorianDate, 'ព្រះរាជពិធីបុណ្យអុំទូក', 'Water Festival', 'traditional'),
-    );
+  for (const rule of DYNAMIC_LUNAR_HOLIDAY_RULES) {
+    if (rule.matches(lunarDate)) {
+      addHoliday(
+        accumulator,
+        createHoliday(gregorianDate, rule.nameKm, rule.nameEn, rule.type),
+      );
+    }
   }
 }
 
@@ -528,6 +524,7 @@ function getFixedPublicHolidays(year: number): KhmerHoliday[] {
     ),
     createHoliday(`${year}-10-29`, 'ព្រះរាជពិធីគ្រងរាជ្យ', 'Coronation Day', 'public'),
     createHoliday(`${year}-11-09`, 'បុណ្យឯករាជ្យជាតិ', 'Independence Day', 'public'),
+    createHoliday(`${year}-12-29`, 'ទិវាសន្តិភាពនៅកម្ពុជា', 'Peace Day in Cambodia', 'public'),
   ];
 }
 
@@ -538,14 +535,9 @@ function addDynamicLunarHolidays(year: number, holidays: KhmerHoliday[]): void {
   while (cursor <= end) {
     const normalized = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
     const lunarDate = convertCore(normalized);
-    addHolidayIfMatch(holidays, lunarDate, formatISODate(normalized));
+    const gregorianDate = formatISODate(normalized);
+    addDynamicLunarHolidaysForDate(holidays, lunarDate, gregorianDate);
     cursor.setDate(cursor.getDate() + 1);
-  }
-}
-
-function addOfficialHolidayOverrides(year: number, holidays: KhmerHoliday[]): void {
-  for (const holiday of OFFICIAL_PUBLIC_HOLIDAY_OVERRIDES[year] ?? []) {
-    addHoliday(holidays, cloneHoliday(holiday));
   }
 }
 
@@ -571,7 +563,6 @@ function buildHolidaysForYear(year: number): KhmerHoliday[] {
   const holidays = getFixedPublicHolidays(year);
 
   addDynamicLunarHolidays(year, holidays);
-  addOfficialHolidayOverrides(year, holidays);
 
   return holidays.sort((a, b) => a.date.localeCompare(b.date));
 }

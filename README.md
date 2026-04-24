@@ -220,9 +220,10 @@ interface KhmerHoliday {
 
 Holiday notes:
 
-- Fixed public holidays are generated automatically.
-- Lunar holidays such as Meak Bochea, Visak Bochea, Pchum Ben, and Water Festival are derived from Khmer lunar dates.
-- Some public holiday dates can change by official government announcement. Known official overrides are included where available.
+- Fixed public holidays are generated automatically for each Gregorian year.
+- Lunar holidays such as Meak Bochea, Visak Bochea, Royal Ploughing Ceremony, Pchum Ben, and Water Festival are derived dynamically from Khmer lunar dates.
+- The package does not need a new hardcoded holiday table every year.
+- Cambodian public holidays can still change by official government announcement. If you find a mismatch with an official calendar, please report the date and source so it can be added to the test suite.
 
 ## Khmer New Year
 
