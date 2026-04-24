@@ -4,6 +4,8 @@ node_modules/
 # Build/test output
 coverage/
 .nyc_output/
+.tmp/
+*.tgz
 
 # Logs
 *.log
