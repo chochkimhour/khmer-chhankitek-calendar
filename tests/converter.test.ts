@@ -1,0 +1,158 @@
+import { describe, expect, it } from 'vitest';
+import {
+  getAnimalYear,
+  getKhmerHolidays,
+  getKhmerMonth,
+  getSak,
+  isSilDay,
+  toKhmerLunarDate,
+} from '../src/converter';
+import type { KhmerHoliday } from '../src/types';
+
+function hasHoliday(holidays: KhmerHoliday[], date: string, nameEn: string): boolean {
+  return holidays.some((holiday) => holiday.date === date && holiday.nameEn === nameEn);
+}
+
+describe('converter', () => {
+  it('handles valid ISO date parsing without timezone drift', () => {
+    const result = toKhmerLunarDate('2026-04-14');
+    expect(result.gregorianDate).toBe('2026-04-14');
+  });
+
+  it('throws on invalid date input', () => {
+    expect(() => toKhmerLunarDate('invalid-date')).toThrow('Invalid date provided.');
+    expect(() => toKhmerLunarDate('2026-02-30')).toThrow('Invalid date provided.');
+  });
+
+  it('returns dynamic Khmer lunar data for a known real-world date', () => {
+    const result = toKhmerLunarDate('2025-07-01');
+
+    expect(result.dayOfWeek).toBe('អង្គារ');
+    expect(result.khmerMonth).toBe('អាសាឍ');
+    expect(result.moonStatus).toBe('កើត');
+    expect(result.moonDay).toBe(6);
+    expect(result.animalYear).toBe('ម្សាញ់');
+    expect(result.sak).toBe('សប្តស័ក');
+    expect(result.buddhistEraYear).toBe(2569);
+  });
+
+  it('matches the real-world Khmer lunar date for 2026-05-20', () => {
+    const result = toKhmerLunarDate('2026-05-20');
+
+    expect(result.dayOfWeek).toBe('ពុធ');
+    expect(result.khmerMonth).toBe('ជេស្ឋ');
+    expect(result.moonStatus).toBe('កើត');
+    expect(result.moonDay).toBe(4);
+    expect(result.isLeapMonth).toBe(false);
+    expect(result.fullText).toBe(
+      'ថ្ងៃពុធ ៤កើត ខែជេស្ឋ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី២០ ខែឧសភា ឆ្នាំ២០២៦',
+    );
+  });
+
+  it('matches the real-world Khmer lunar date for 2026-09-10', () => {
+    const result = toKhmerLunarDate('2026-09-10');
+
+    expect(result.dayOfWeek).toBe('ព្រហស្បតិ៍');
+    expect(result.khmerMonth).toBe('ស្រាពណ៍');
+    expect(result.moonStatus).toBe('រោច');
+    expect(result.moonDay).toBe(13);
+    expect(result.fullText).toBe(
+      'ថ្ងៃព្រហស្បតិ៍ ១៣រោច ខែស្រាពណ៍ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី១០ ខែកញ្ញា ឆ្នាំ២០២៦',
+    );
+  });
+
+  it('uses first and second Asadha names in Khmer leap-month years', () => {
+    const firstAsadha = toKhmerLunarDate('2026-07-03');
+    const secondAsadha = toKhmerLunarDate('2026-07-16');
+
+    expect(firstAsadha.khmerMonth).toBe('បឋមាសាឍ');
+    expect(firstAsadha.isLeapMonth).toBe(true);
+    expect(secondAsadha.khmerMonth).toBe('ទុតិយាសាឍ');
+    expect(secondAsadha.isLeapMonth).toBe(true);
+  });
+
+  it('matches known lunar day sequence from a published 2026 calendar spot-check', () => {
+    const result = toKhmerLunarDate('2026-03-01');
+
+    expect(result.moonStatus).toBe('កើត');
+    expect(result.moonDay).toBe(13);
+    expect(result.khmerMonth).toBe('ផល្គុន');
+  });
+
+  it('updates animal year and sak at Khmer New Year boundary', () => {
+    const result = toKhmerLunarDate('2026-04-14');
+
+    expect(result.animalYear).toBe('មមី');
+    expect(result.sak).toBe('អដ្ឋស័ក');
+    expect(result.buddhistEraYear).toBe(2569);
+  });
+
+  it('keeps Buddhist Era year in the old year until Chet finishes', () => {
+    const result = toKhmerLunarDate('2026-04-16');
+
+    expect(result.dayOfWeek).toBe('ព្រហស្បតិ៍');
+    expect(result.khmerMonth).toBe('ចេត្រ');
+    expect(result.moonStatus).toBe('រោច');
+    expect(result.moonDay).toBe(14);
+    expect(result.animalYear).toBe('មមី');
+    expect(result.sak).toBe('អដ្ឋស័ក');
+    expect(result.buddhistEraYear).toBe(2569);
+    expect(result.fullText).toBe(
+      'ថ្ងៃព្រហស្បតិ៍ ១៤រោច ខែចេត្រ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១៦ ខែមេសា ឆ្នាំ២០២៦',
+    );
+  });
+
+  it('exposes helper accessors', () => {
+    expect(getKhmerMonth('2025-07-01')).toBe('អាសាឍ');
+    expect(getAnimalYear('2026-04-14')).toBe('មមី');
+    expect(getSak('2026-04-14')).toBe('អដ្ឋស័ក');
+    expect(isSilDay('2026-05-01')).toBe(true);
+  });
+
+  it('returns dynamic and official holidays for a year', () => {
+    const holidays = getKhmerHolidays(2026);
+
+    expect(hasHoliday(holidays, '2026-04-14', 'Khmer New Year')).toBe(true);
+    expect(hasHoliday(holidays, '2026-05-01', 'Visak Bochea Day')).toBe(true);
+    expect(hasHoliday(holidays, '2026-05-05', 'Royal Ploughing Ceremony')).toBe(true);
+    expect(hasHoliday(holidays, '2026-10-12', 'Pchum Ben Festival')).toBe(true);
+    expect(hasHoliday(holidays, '2026-11-25', 'Water Festival')).toBe(true);
+    expect(hasHoliday(holidays, '2026-12-29', 'Peace Day in Cambodia')).toBe(true);
+  });
+
+  it('uses four Khmer New Year days in Gregorian leap years', () => {
+    const holidays2024 = getKhmerHolidays(2024).filter(
+      (holiday) => holiday.nameEn === 'Khmer New Year',
+    );
+    const holidays2026 = getKhmerHolidays(2026).filter(
+      (holiday) => holiday.nameEn === 'Khmer New Year',
+    );
+
+    expect(holidays2024.map((holiday) => holiday.date)).toEqual([
+      '2024-04-13',
+      '2024-04-14',
+      '2024-04-15',
+      '2024-04-16',
+    ]);
+    expect(holidays2026.map((holiday) => holiday.date)).toEqual([
+      '2026-04-14',
+      '2026-04-15',
+      '2026-04-16',
+    ]);
+  });
+
+  it('keeps cached holiday data isolated from caller mutation', () => {
+    const holidays = getKhmerHolidays(2026);
+    holidays.length = 0;
+
+    expect(getKhmerHolidays(2026).length).toBeGreaterThan(0);
+  });
+
+  it('deduplicates official holiday overrides by date and English name', () => {
+    const holidays = toKhmerLunarDate('2026-06-18').holidays;
+
+    expect(holidays.filter((holiday) => holiday.nameEn === "Queen Mother's Birthday")).toHaveLength(
+      1,
+    );
+  });
+});

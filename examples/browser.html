@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Khmer Chhankitek Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --paper: #f6efe2;
+        --paper-strong: #fffaf0;
+        --ink: #1d1913;
+        --muted: #776b5b;
+        --line: #ded0b7;
+        --teal: #0f6670;
+        --teal-strong: #083f47;
+        --teal-soft: #d7e9e8;
+        --red: #a63f32;
+        --red-soft: #f4d8d1;
+        --gold: #ba872c;
+        --gold-soft: #f4e4bd;
+        --shadow: 0 28px 90px rgba(70, 50, 28, 0.18);
+        --shadow-soft: 0 14px 40px rgba(70, 50, 28, 0.1);
+        --font-en: 'Nunito', 'Segoe UI', sans-serif;
+        --font-km: 'Khmer OS Siemreap', 'Noto Sans Khmer', 'Leelawadee UI', sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+        font-family: var(--font-en);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          linear-gradient(135deg, rgba(255, 250, 240, 0.95) 0 22%, transparent 22% 100%),
+          linear-gradient(315deg, rgba(15, 102, 112, 0.12) 0 28%, transparent 28% 100%),
+          repeating-linear-gradient(
+            135deg,
+            rgba(33, 27, 22, 0.035) 0,
+            rgba(33, 27, 22, 0.035) 1.5px,
+            transparent 1px,
+            transparent 24px
+          ),
+          var(--paper);
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+      }
+
+      .shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 40px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        position: sticky;
+        top: 12px;
+        z-index: 2;
+        margin-bottom: 44px;
+        border: 1px solid rgba(222, 208, 183, 0.78);
+        border-radius: 8px;
+        padding: 10px;
+        background: rgba(255, 250, 240, 0.74);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .mark {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border: 1px solid rgba(166, 63, 50, 0.28);
+        border-radius: 8px;
+        background:
+          linear-gradient(145deg, rgba(255, 250, 240, 0.94), rgba(244, 216, 209, 0.78)),
+          var(--paper-strong);
+        color: var(--red);
+        font-family: var(--font-km);
+        font-size: 1.2rem;
+        font-weight: 800;
+      }
+
+      .brand-title {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: 0;
+      }
+
+      .brand-subtitle {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .credit {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .credit strong {
+        color: var(--red);
+        font-weight: 900;
+      }
+
+      .status-pill {
+        border: 1px solid rgba(24, 94, 103, 0.22);
+        border-radius: 999px;
+        padding: 9px 14px;
+        background: rgba(215, 233, 232, 0.72);
+        color: var(--teal);
+        font-weight: 800;
+        font-size: 0.9rem;
+        white-space: nowrap;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(390px, 1.1fr);
+        gap: 30px;
+        align-items: stretch;
+      }
+
+      .intro {
+        display: flex;
+        min-height: 590px;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid rgba(222, 208, 183, 0.68);
+        border-radius: 8px;
+        padding: 28px;
+        background: rgba(255, 250, 240, 0.46);
+        box-shadow: var(--shadow-soft);
+        animation: fade-in 460ms ease both;
+      }
+
+      h1 {
+        max-width: 680px;
+        margin: 0;
+        font-size: clamp(2.55rem, 7vw, 5.8rem);
+        line-height: 1.03;
+        letter-spacing: 0;
+      }
+
+      h1 span {
+        color: var(--teal);
+      }
+
+      .lede {
+        max-width: 620px;
+        margin: 24px 0 0;
+        color: var(--muted);
+        font-size: 1.08rem;
+        line-height: 1.8;
+      }
+
+      .samples {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 34px;
+      }
+
+      .sample-button {
+        min-height: 40px;
+        border: 1px solid rgba(15, 102, 112, 0.18);
+        border-radius: 999px;
+        padding: 0 15px;
+        background: rgba(255, 250, 240, 0.8);
+        color: var(--ink);
+        cursor: pointer;
+        font-weight: 800;
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      .sample-button:hover {
+        transform: translateY(-3px);
+        border-color: rgba(15, 102, 112, 0.42);
+        background: #ffffff;
+        box-shadow: 0 10px 24px rgba(15, 102, 112, 0.12);
+      }
+
+      .calendar-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 42px;
+      }
+
+      .mini-date {
+        min-height: 86px;
+        border: 1px solid rgba(222, 208, 183, 0.8);
+        border-radius: 8px;
+        padding: 12px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 250, 240, 0.7)),
+          var(--paper-strong);
+        transition:
+          transform 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      .mini-date:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .mini-date strong {
+        display: block;
+        color: var(--red);
+        font-family: var(--font-km);
+        font-size: 1.3rem;
+      }
+
+      .mini-date span {
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+
+      .workspace {
+        border: 1px solid rgba(222, 208, 183, 0.95);
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 250, 240, 0.92)),
+          var(--paper-strong);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        animation: rise-in 520ms ease both;
+      }
+
+      .toolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: end;
+        border-bottom: 1px solid var(--line);
+        padding: 18px;
+        background:
+          linear-gradient(90deg, rgba(215, 233, 232, 0.42), transparent 46%),
+          rgba(255, 250, 240, 0.9);
+      }
+
+      label {
+        display: grid;
+        gap: 7px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      input[type='date'] {
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid #cfbea4;
+        border-radius: 6px;
+        padding: 0 12px;
+        background: #fffdf8;
+        color: var(--ink);
+        outline: none;
+        font-weight: 700;
+        transition:
+          border-color 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      input[type='date']:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 4px rgba(24, 94, 103, 0.14);
+      }
+
+      .convert-button {
+        min-height: 48px;
+        border-radius: 6px;
+        padding: 0 20px;
+        background: linear-gradient(135deg, var(--teal), var(--teal-strong));
+        color: #fff;
+        cursor: pointer;
+        font-weight: 800;
+        transition:
+          transform 180ms ease,
+          background 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      .convert-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 34px rgba(15, 102, 112, 0.26);
+      }
+
+      .result {
+        position: relative;
+        padding: 26px;
+      }
+
+      .result::before {
+        display: block;
+        width: 74px;
+        height: 4px;
+        margin-bottom: 20px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--red), var(--gold), var(--teal));
+        content: '';
+      }
+
+      .result-date {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      .result-date h2 {
+        margin: 0;
+        color: var(--red);
+        font-weight: 900;
+        font-size: 1rem;
+      }
+
+      .result-date span {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .khmer-result {
+        margin: 0;
+        border: 1px solid rgba(222, 208, 183, 0.72);
+        border-radius: 8px;
+        padding: 18px;
+        background: #fffdf8;
+        font-family: var(--font-km);
+        font-size: clamp(1.45rem, 3.4vw, 2.2rem);
+        line-height: 1.75;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+      }
+
+      .english-result {
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.7;
+      }
+
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .fact {
+        min-height: 88px;
+        border: 1px solid rgba(222, 208, 183, 0.78);
+        border-radius: 8px;
+        padding: 12px;
+        background: rgba(255, 250, 240, 0.78);
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background 180ms ease;
+      }
+
+      .fact:hover {
+        transform: translateY(-2px);
+        border-color: rgba(15, 102, 112, 0.26);
+        background: #fffdf8;
+      }
+
+      .fact span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .fact strong {
+        display: block;
+        margin-top: 7px;
+        font-family: var(--font-km);
+        font-size: 1.08rem;
+      }
+
+      .holiday-band {
+        margin-top: 16px;
+        border: 1px solid rgba(186, 135, 44, 0.26);
+        border-left: 4px solid var(--gold);
+        border-radius: 6px;
+        padding: 12px 14px;
+        background: linear-gradient(90deg, var(--gold-soft), #fffaf0);
+        color: #614413;
+        font-weight: 700;
+      }
+
+      .history {
+        display: grid;
+        gap: 10px;
+        padding: 0 24px 24px;
+      }
+
+      .history-title {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+
+      .history-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .history-item {
+        display: grid;
+        grid-template-columns: 104px minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+        border: 1px solid rgba(222, 208, 183, 0.68);
+        border-radius: 8px;
+        padding: 10px;
+        background: rgba(255, 250, 240, 0.7);
+        cursor: pointer;
+        animation: fade-in 260ms ease both;
+        transition:
+          transform 180ms ease,
+          background 180ms ease,
+          border-color 180ms ease;
+      }
+
+      .history-item:hover {
+        transform: translateX(3px);
+        border-color: rgba(166, 63, 50, 0.24);
+        background: #fffdf8;
+      }
+
+      .history-item time {
+        color: var(--red);
+        font-weight: 700;
+      }
+
+      .history-item p {
+        margin: 0;
+        color: var(--muted);
+        font-family: var(--font-km);
+        line-height: 1.5;
+      }
+
+      @keyframes rise-in {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 860px) {
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+        }
+
+        .intro {
+          min-height: auto;
+        }
+
+        .calendar-strip {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 560px) {
+        .shell {
+          width: min(100% - 22px, 1120px);
+          padding: 22px 0;
+        }
+
+        .toolbar,
+        .facts {
+          grid-template-columns: 1fr;
+        }
+
+        .result {
+          padding: 18px;
+        }
+
+        .history {
+          padding: 0 18px 18px;
+        }
+
+        .history-item {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="mark">ខ</div>
+          <div>
+            <p class="brand-title">Khmer Chhankitek Calendar</p>
+            <p class="brand-subtitle">Browser demo</p>
+          </div>
+        </div>
+        <div class="status-pill">Powered by dist/index.js</div>
+      </header>
+
+      <section class="hero" aria-label="Khmer lunar calendar converter">
+        <div class="intro">
+          <div>
+            <h1>Convert Gregorian dates to <span>Khmer lunar</span> dates.</h1>
+            <p class="lede">
+              A small browser interface for checking Khmer Chhankitek month, moon day, Buddhist Era
+              year, Sil day, leap month, and holidays.
+            </p>
+            <p class="credit">Created by <strong>Choch Kimhour</strong> from Cambodia.</p>
+            <div class="samples" id="samples"></div>
+          </div>
+
+          <div class="calendar-strip" id="calendar-strip"></div>
+        </div>
+
+        <div class="workspace">
+          <form class="toolbar" id="date-form">
+            <label>
+              Gregorian date
+              <input id="date-input" type="date" required />
+            </label>
+            <button class="convert-button" type="submit">Convert</button>
+          </form>
+
+          <section class="result" id="result" aria-live="polite"></section>
+
+          <section class="history">
+            <p class="history-title">Recent checks</p>
+            <div class="history-list" id="history"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { formatKhmerDate, toKhmerLunarDate } from '../dist/index.js';
+
+      const form = document.getElementById('date-form');
+      const input = document.getElementById('date-input');
+      const result = document.getElementById('result');
+      const history = document.getElementById('history');
+      const samples = document.getElementById('samples');
+      const calendarStrip = document.getElementById('calendar-strip');
+
+      const today = new Date();
+      const todayIso = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, '0'),
+        String(today.getDate()).padStart(2, '0'),
+      ].join('-');
+      const sampleDates = [todayIso, '2026-05-20', '2026-09-10', '2026-12-09'];
+      const recentDates = [];
+
+      input.value = todayIso;
+
+      function getHolidayText(lunarDate) {
+        return (
+          lunarDate.holidays.map((holiday) => holiday.nameEn ?? holiday.nameKm).join(', ') || 'None'
+        );
+      }
+
+      function renderResult(date) {
+        const lunarDate = toKhmerLunarDate(date);
+        const holidayText = getHolidayText(lunarDate);
+
+        result.innerHTML = `
+          <div class="result-date">
+            <h2>${lunarDate.gregorianDate}</h2>
+            <span>${lunarDate.dayOfWeek}</span>
+          </div>
+          <p class="khmer-result">${lunarDate.fullText}</p>
+          <p class="english-result">${formatKhmerDate(date, { locale: 'en' })}</p>
+          <div class="facts">
+            <div class="fact"><span>Moon</span><strong>${lunarDate.moonDay}${lunarDate.moonStatus}</strong></div>
+            <div class="fact"><span>Month</span><strong>${lunarDate.khmerMonth}</strong></div>
+            <div class="fact"><span>Year</span><strong>${lunarDate.animalYear} ${lunarDate.sak}</strong></div>
+            <div class="fact"><span>Buddhist Era</span><strong>${lunarDate.buddhistEraYear}</strong></div>
+            <div class="fact"><span>Sil day</span><strong>${lunarDate.isSilDay ? 'Yes' : 'No'}</strong></div>
+            <div class="fact"><span>Leap month</span><strong>${lunarDate.isLeapMonth ? 'Yes' : 'No'}</strong></div>
+          </div>
+          <div class="holiday-band">Holiday: ${holidayText}</div>
+        `;
+
+        addHistory(date, lunarDate);
+      }
+
+      function addHistory(date, lunarDate) {
+        recentDates.unshift({
+          date,
+          text: `${lunarDate.moonDay}${lunarDate.moonStatus} ខែ${lunarDate.khmerMonth}`,
+        });
+
+        const unique = [];
+        for (const item of recentDates) {
+          if (!unique.some((entry) => entry.date === item.date)) {
+            unique.push(item);
+          }
+        }
+
+        recentDates.length = 0;
+        recentDates.push(...unique.slice(0, 4));
+
+        history.replaceChildren(
+          ...recentDates.map((item) => {
+            const row = document.createElement('button');
+            row.className = 'history-item';
+            row.type = 'button';
+            row.innerHTML = `<time>${item.date}</time><p>${item.text}</p>`;
+            row.addEventListener('click', () => {
+              input.value = item.date;
+              renderResult(item.date);
+            });
+            return row;
+          }),
+        );
+      }
+
+      function renderSamples() {
+        samples.replaceChildren(
+          ...sampleDates.map((date) => {
+            const button = document.createElement('button');
+            button.className = 'sample-button';
+            button.type = 'button';
+            button.textContent = date === todayIso ? 'Today' : date;
+            button.addEventListener('click', () => {
+              input.value = date;
+              renderResult(date);
+            });
+            return button;
+          }),
+        );
+      }
+
+      function renderCalendarStrip() {
+        calendarStrip.replaceChildren(
+          ...sampleDates.map((date) => {
+            const lunarDate = toKhmerLunarDate(date);
+            const item = document.createElement('div');
+            item.className = 'mini-date';
+            item.innerHTML = `<strong>${lunarDate.moonDay}${lunarDate.moonStatus}</strong><span>${date}<br />ខែ${lunarDate.khmerMonth}</span>`;
+            return item;
+          }),
+        );
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        renderResult(input.value);
+      });
+
+      renderSamples();
+      renderCalendarStrip();
+      renderResult(todayIso);
+    </script>
+  </body>
+</html>
