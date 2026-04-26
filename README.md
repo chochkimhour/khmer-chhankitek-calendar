@@ -2,6 +2,7 @@
 
 ![npm version](https://img.shields.io/npm/v/khmer-chhankitek-calendar?style=flat-square)
 ![license](https://img.shields.io/npm/l/khmer-chhankitek-calendar?style=flat-square)
+![npm downloads](https://img.shields.io/npm/dm/khmer-chhankitek-calendar?style=flat-square)
 ![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen?style=flat-square)
 
 Khmer Chhankitek calendar utilities for JavaScript and TypeScript.
@@ -9,6 +10,14 @@ Khmer Chhankitek calendar utilities for JavaScript and TypeScript.
 This package converts Gregorian dates to Khmer lunar dates, formats Khmer and English calendar text, detects `ថ្ងៃសីល`, returns Khmer public and lunar holidays, and works in modern Node.js and browser-based applications.
 
 Created and maintained by **Choch Kimhour** from **Cambodia 🇰🇭**.
+
+## Why Developers Use It
+
+- Simple API with predictable output
+- Works in JavaScript and TypeScript
+- Suitable for backend and frontend applications
+- Useful for Khmer calendar UI, holiday logic, reports, dashboards, payroll tools, school systems, and business apps
+- No runtime dependencies
 
 ## Features
 
@@ -47,6 +56,7 @@ You can use this package with:
 - TypeScript
 - Node.js
 - Browser bundlers
+- Angular
 - React
 - Next.js
 - Vue
@@ -178,6 +188,15 @@ const holidays = getKhmerHolidays(2026);
 console.log(holidays.filter((holiday) => holiday.date === '2026-05-01'));
 ```
 
+## Included Examples
+
+This repository includes ready-to-read examples in the [examples](D:/Projects/khmer-chhankitek-calendar/examples) folder:
+
+- [Node example](D:/Projects/khmer-chhankitek-calendar/examples/node.ts)
+- [Browser example](D:/Projects/khmer-chhankitek-calendar/examples/browser.html)
+- [Angular example](D:/Projects/khmer-chhankitek-calendar/examples/angular.component.ts)
+- [React example](D:/Projects/khmer-chhankitek-calendar/examples/react.tsx)
+
 ## API
 
 ### `toKhmerLunarDate(date)`
@@ -254,6 +273,21 @@ export function KhmerDateLabel() {
 }
 ```
 
+### Angular
+
+```ts
+import { Component } from '@angular/core';
+import { formatKhmerDate } from 'khmer-chhankitek-calendar';
+
+@Component({
+  selector: 'app-khmer-date',
+  template: `<p>{{ khmerDate }}</p>`,
+})
+export class KhmerDateComponent {
+  khmerDate = formatKhmerDate('2026-05-01');
+}
+```
+
 ### Node.js / Express
 
 ```js
@@ -289,13 +323,12 @@ toKhmerLunarDate('2026-05-02').buddhistEraYear;
 
 Dates before `1900-01-01` throw an error.
 
-## Why Use This Package
+## Publishing Notes
 
-- Simple API
-- No runtime dependencies
-- Works in JavaScript and TypeScript
-- Works in backend and frontend projects
-- Useful for Khmer calendar display, holiday logic, reporting, dashboards, and business apps
+- The package is published as ESM and CommonJS
+- TypeScript declarations are included
+- Build output is generated into `dist/`
+- Source code stays in `src/`
 
 ## License
 
