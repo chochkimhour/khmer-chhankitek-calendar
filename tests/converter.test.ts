@@ -118,13 +118,28 @@ describe('converter', () => {
   });
 
   it('moves Buddhist Era year at the Vesak month boundary', () => {
-    const beforeBoundary = toKhmerLunarDate('2026-04-16');
-    const onBoundary = toKhmerLunarDate('2026-04-17');
+    const beforeBoundary = toKhmerLunarDate('2026-05-01');
+    const onBoundary = toKhmerLunarDate('2026-05-02');
 
-    expect(beforeBoundary.khmerMonth).toBe('ចេត្រ');
+    expect(beforeBoundary.khmerMonth).toBe('ពិសាខ');
     expect(beforeBoundary.buddhistEraYear).toBe(2569);
     expect(onBoundary.khmerMonth).toBe('ពិសាខ');
     expect(onBoundary.buddhistEraYear).toBe(2570);
+  });
+
+  it('keeps the old Buddhist Era year through Vesak full moon and annotates the observance', () => {
+    const result = toKhmerLunarDate('2026-05-01');
+
+    expect(result.dayOfWeek).toBe('សុក្រ');
+    expect(result.khmerMonth).toBe('ពិសាខ');
+    expect(result.moonStatus).toBe('កើត');
+    expect(result.moonDay).toBe(15);
+    expect(result.isSilDay).toBe(true);
+    expect(result.buddhistEraYear).toBe(2569);
+    expect(result.khmerYear).toBe(2569);
+    expect(result.fullText).toBe(
+      'ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី',
+    );
   });
 
   it('exposes helper accessors', () => {

@@ -186,8 +186,8 @@ var MONTH_LENGTH_SHORT = 29;
 var MONTH_LENGTH_LONG = 30;
 var SONGKRAN_SEARCH_START_MONTH = 3;
 var SONGKRAN_SEARCH_START_DAY = 10;
-var SONGKRAN_SEARCH_END_MONTH = 4;
-var SONGKRAN_SEARCH_END_DAY = 10;
+var SONGKRAN_SEARCH_END_MONTH = 5;
+var SONGKRAN_SEARCH_END_DAY = 15;
 var NORMAL_MONTHS_BY_NUMBER = [
   "\u1798\u17B7\u1782\u179F\u17B7\u179A",
   "\u1794\u17BB\u179F\u17D2\u179F",
@@ -219,7 +219,7 @@ var LEAP_MONTHS_BY_NUMBER = [
 ];
 var holidayCache = /* @__PURE__ */ new Map();
 var khmerNewYearCache = /* @__PURE__ */ new Map();
-var vesakBoundaryCache = /* @__PURE__ */ new Map();
+var buddhistEraBoundaryCache = /* @__PURE__ */ new Map();
 var DYNAMIC_LUNAR_HOLIDAY_RULES = [
   {
     nameKm: "\u1798\u17B6\u1783\u1794\u17BC\u1787\u17B6",
@@ -579,16 +579,16 @@ function getKhmerCivilDate(date) {
     yearType: getKhmerYearType(year)
   };
 }
-function getFirstDayOfVesak(year) {
-  const cached = vesakBoundaryCache.get(year);
+function getBuddhistEraBoundary(year) {
+  const cached = buddhistEraBoundaryCache.get(year);
   if (cached) {
     return cloneDate(cached);
   }
   const boundary = findGregorianDateForKhmerCivilDate(year, {
     khmerMonth: "\u1796\u17B7\u179F\u17B6\u1781",
-    monthDay: 1
+    monthDay: 16
   });
-  vesakBoundaryCache.set(year, boundary);
+  buddhistEraBoundaryCache.set(year, boundary);
   return cloneDate(boundary);
 }
 function getMoonPhase(monthDay) {
@@ -604,22 +604,30 @@ function isLeapAsadhaMonth(khmerMonth) {
 function isBuddhistHolyDay(monthDay, monthLength) {
   return monthDay === 8 || monthDay === 15 || monthDay === 23 || monthDay === monthLength;
 }
-function buildKhmerFullText(date, dayOfWeek, moonDay, moonStatus, khmerMonth, animalYear, sak, buddhistEraYear) {
+function getObservanceText(monthDay) {
+  if (monthDay === 15) {
+    return "\u1790\u17D2\u1784\u17C3\u1793\u17C1\u17C7 \u1787\u17B6\u1790\u17D2\u1784\u17C3\u179F\u17B8\u179B \u1793\u17B7\u1784\u1796\u17C1\u1789\u1794\u17BC\u178E\u17CC\u1798\u17B8";
+  }
+  return void 0;
+}
+function buildKhmerFullText(date, dayOfWeek, moonDay, moonStatus, khmerMonth, animalYear, sak, buddhistEraYear, observanceText) {
   const gregorianDayKhmer = toKhmerNumber(date.getDate());
   const gregorianMonthKm = GREGORIAN_MONTHS_KM[date.getMonth()];
   const gregorianYearKhmer = toKhmerNumber(date.getFullYear());
-  return `\u1790\u17D2\u1784\u17C3${dayOfWeek} ${toKhmerNumber(moonDay)}${moonStatus} \u1781\u17C2${khmerMonth} \u1786\u17D2\u1793\u17B6\u17C6${animalYear} ${sak} \u1796\u17BB\u1791\u17D2\u1792\u179F\u1780\u179A\u17B6\u1787 ${toKhmerNumber(buddhistEraYear)} \u178F\u17D2\u179A\u17BC\u179C\u1793\u17B9\u1784\u1790\u17D2\u1784\u17C3\u1791\u17B8${gregorianDayKhmer} \u1781\u17C2${gregorianMonthKm} \u1786\u17D2\u1793\u17B6\u17C6${gregorianYearKhmer}`;
+  const baseText = `\u1790\u17D2\u1784\u17C3${dayOfWeek} ${toKhmerNumber(moonDay)}${moonStatus} \u1781\u17C2${khmerMonth} \u1786\u17D2\u1793\u17B6\u17C6${animalYear} ${sak} \u1796\u17BB\u1791\u17D2\u1792\u179F\u1780\u179A\u17B6\u1787 ${toKhmerNumber(buddhistEraYear)} \u178F\u17D2\u179A\u17BC\u179C\u1793\u17B9\u1784\u1790\u17D2\u1784\u17C3\u1791\u17B8${gregorianDayKhmer} \u1781\u17C2${gregorianMonthKm} \u1786\u17D2\u1793\u17B6\u17C6${gregorianYearKhmer}`;
+  return observanceText ? `${baseText}${observanceText}` : baseText;
 }
 function convertCore(date) {
   const referenceYear = getKhmerReferenceYear(date);
   const khmerCivilDate = getKhmerCivilDate(date);
   const { moonStatus, moonDay } = getMoonPhase(khmerCivilDate.monthDay);
-  const buddhistEraYear = isSameOrAfterDate(date, getFirstDayOfVesak(date.getFullYear())) ? date.getFullYear() + 544 : date.getFullYear() + 543;
+  const buddhistEraYear = isSameOrAfterDate(date, getBuddhistEraBoundary(date.getFullYear())) ? date.getFullYear() + 544 : date.getFullYear() + 543;
   const khmerYear = buddhistEraYear;
   const animalYear = getAnimalYearForReferenceYear(referenceYear);
   const sak = getSakForReferenceYear(referenceYear);
   const dayOfWeek = DAYS_OF_WEEK_KM[date.getDay()];
   const isSilDay2 = isBuddhistHolyDay(khmerCivilDate.monthDay, khmerCivilDate.monthLength);
+  const observanceText = getObservanceText(khmerCivilDate.monthDay);
   return {
     gregorianDate: formatISODate(date),
     dayOfWeek,
@@ -640,7 +648,8 @@ function convertCore(date) {
       khmerCivilDate.khmerMonth,
       animalYear,
       sak,
-      buddhistEraYear
+      buddhistEraYear,
+      observanceText
     )
   };
 }

@@ -19,8 +19,8 @@ const MONTH_LENGTH_SHORT = 29;
 const MONTH_LENGTH_LONG = 30;
 const SONGKRAN_SEARCH_START_MONTH = 3;
 const SONGKRAN_SEARCH_START_DAY = 10;
-const SONGKRAN_SEARCH_END_MONTH = 4;
-const SONGKRAN_SEARCH_END_DAY = 10;
+const SONGKRAN_SEARCH_END_MONTH = 5;
+const SONGKRAN_SEARCH_END_DAY = 15;
 
 type KhmerYearType = 'normal' | 'leap-day' | 'leap-month';
 
@@ -81,7 +81,7 @@ const LEAP_MONTHS_BY_NUMBER: KhmerMonth[] = [
 
 const holidayCache = new Map<number, KhmerHoliday[]>();
 const khmerNewYearCache = new Map<number, KhmerNewYearInfo>();
-const vesakBoundaryCache = new Map<number, Date>();
+const buddhistEraBoundaryCache = new Map<number, Date>();
 
 const DYNAMIC_LUNAR_HOLIDAY_RULES: DynamicHolidayRule[] = [
   {
@@ -575,8 +575,8 @@ function getKhmerCivilDate(date: Date): KhmerCivilDate {
   };
 }
 
-function getFirstDayOfVesak(year: number): Date {
-  const cached = vesakBoundaryCache.get(year);
+function getBuddhistEraBoundary(year: number): Date {
+  const cached = buddhistEraBoundaryCache.get(year);
 
   if (cached) {
     return cloneDate(cached);
@@ -584,10 +584,10 @@ function getFirstDayOfVesak(year: number): Date {
 
   const boundary = findGregorianDateForKhmerCivilDate(year, {
     khmerMonth: 'ពិសាខ',
-    monthDay: 1,
+    monthDay: 16,
   });
 
-  vesakBoundaryCache.set(year, boundary);
+  buddhistEraBoundaryCache.set(year, boundary);
   return cloneDate(boundary);
 }
 
@@ -611,6 +611,14 @@ function isBuddhistHolyDay(monthDay: number, monthLength: number): boolean {
   return monthDay === 8 || monthDay === 15 || monthDay === 23 || monthDay === monthLength;
 }
 
+function getObservanceText(monthDay: number): string | undefined {
+  if (monthDay === 15) {
+    return 'ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី';
+  }
+
+  return undefined;
+}
+
 function buildKhmerFullText(
   date: Date,
   dayOfWeek: DayOfWeek,
@@ -620,19 +628,22 @@ function buildKhmerFullText(
   animalYear: AnimalYear,
   sak: Sak,
   buddhistEraYear: number,
+  observanceText?: string,
 ): string {
   const gregorianDayKhmer = toKhmerNumber(date.getDate());
   const gregorianMonthKm = GREGORIAN_MONTHS_KM[date.getMonth()];
   const gregorianYearKhmer = toKhmerNumber(date.getFullYear());
 
-  return `ថ្ងៃ${dayOfWeek} ${toKhmerNumber(moonDay)}${moonStatus} ខែ${khmerMonth} ឆ្នាំ${animalYear} ${sak} ពុទ្ធសករាជ ${toKhmerNumber(buddhistEraYear)} ត្រូវនឹងថ្ងៃទី${gregorianDayKhmer} ខែ${gregorianMonthKm} ឆ្នាំ${gregorianYearKhmer}`;
+  const baseText = `ថ្ងៃ${dayOfWeek} ${toKhmerNumber(moonDay)}${moonStatus} ខែ${khmerMonth} ឆ្នាំ${animalYear} ${sak} ពុទ្ធសករាជ ${toKhmerNumber(buddhistEraYear)} ត្រូវនឹងថ្ងៃទី${gregorianDayKhmer} ខែ${gregorianMonthKm} ឆ្នាំ${gregorianYearKhmer}`;
+
+  return observanceText ? `${baseText}${observanceText}` : baseText;
 }
 
 function convertCore(date: Date): Omit<KhmerLunarDate, 'holidays'> {
   const referenceYear = getKhmerReferenceYear(date);
   const khmerCivilDate = getKhmerCivilDate(date);
   const { moonStatus, moonDay } = getMoonPhase(khmerCivilDate.monthDay);
-  const buddhistEraYear = isSameOrAfterDate(date, getFirstDayOfVesak(date.getFullYear()))
+  const buddhistEraYear = isSameOrAfterDate(date, getBuddhistEraBoundary(date.getFullYear()))
     ? date.getFullYear() + 544
     : date.getFullYear() + 543;
   const khmerYear = buddhistEraYear;
@@ -640,6 +651,7 @@ function convertCore(date: Date): Omit<KhmerLunarDate, 'holidays'> {
   const sak = getSakForReferenceYear(referenceYear);
   const dayOfWeek = DAYS_OF_WEEK_KM[date.getDay()];
   const isSilDay = isBuddhistHolyDay(khmerCivilDate.monthDay, khmerCivilDate.monthLength);
+  const observanceText = getObservanceText(khmerCivilDate.monthDay);
 
   return {
     gregorianDate: formatISODate(date),
@@ -662,6 +674,7 @@ function convertCore(date: Date): Omit<KhmerLunarDate, 'holidays'> {
       animalYear,
       sak,
       buddhistEraYear,
+      observanceText,
     ),
   };
 }

@@ -227,15 +227,15 @@ getKhmerHolidays(2024)
 
 `animalYear` and `sak` change at Khmer New Year.
 
-`buddhistEraYear` can change later, at the transition from `ចេត្រ` to `ពិសាខ`.
+`buddhistEraYear` changes later than Khmer New Year, at `១រោច ខែពិសាខ`.
 
 Example:
 
 ```ts
-toKhmerLunarDate('2026-04-16').buddhistEraYear;
+toKhmerLunarDate('2026-05-01').buddhistEraYear;
 // 2569
 
-toKhmerLunarDate('2026-04-17').buddhistEraYear;
+toKhmerLunarDate('2026-05-02').buddhistEraYear;
 // 2570
 ```
 
