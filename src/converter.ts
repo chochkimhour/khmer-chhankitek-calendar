@@ -611,9 +611,17 @@ function isBuddhistHolyDay(monthDay: number, monthLength: number): boolean {
   return monthDay === 8 || monthDay === 15 || monthDay === 23 || monthDay === monthLength;
 }
 
-function getObservanceText(monthDay: number): string | undefined {
-  if (monthDay === 15) {
+function getObservanceText(
+  monthDay: number,
+  moonStatus: KhmerLunarDate['moonStatus'],
+  isSilDay: boolean,
+): string | undefined {
+  if (monthDay === 15 && moonStatus === MOON_STATUS_KM.waxing) {
     return 'ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី';
+  }
+
+  if (isSilDay) {
+    return 'ថ្ងៃនេះ ជាថ្ងៃសីល';
   }
 
   return undefined;
@@ -651,7 +659,7 @@ function convertCore(date: Date): Omit<KhmerLunarDate, 'holidays'> {
   const sak = getSakForReferenceYear(referenceYear);
   const dayOfWeek = DAYS_OF_WEEK_KM[date.getDay()];
   const isSilDay = isBuddhistHolyDay(khmerCivilDate.monthDay, khmerCivilDate.monthLength);
-  const observanceText = getObservanceText(khmerCivilDate.monthDay);
+  const observanceText = getObservanceText(khmerCivilDate.monthDay, moonStatus, isSilDay);
 
   return {
     gregorianDate: formatISODate(date),

@@ -113,7 +113,7 @@ describe('converter', () => {
     expect(result.sak).toBe('អដ្ឋស័ក');
     expect(result.buddhistEraYear).toBe(2569);
     expect(result.fullText).toBe(
-      'ថ្ងៃព្រហស្បតិ៍ ១៤រោច ខែចេត្រ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១៦ ខែមេសា ឆ្នាំ២០២៦',
+      'ថ្ងៃព្រហស្បតិ៍ ១៤រោច ខែចេត្រ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១៦ ខែមេសា ឆ្នាំ២០២៦ថ្ងៃនេះ ជាថ្ងៃសីល',
     );
   });
 
@@ -139,6 +139,19 @@ describe('converter', () => {
     expect(result.khmerYear).toBe(2569);
     expect(result.fullText).toBe(
       'ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី',
+    );
+  });
+
+  it('annotates waning holy days with the generic sil text', () => {
+    const result = toKhmerLunarDate('2026-05-16');
+
+    expect(result.dayOfWeek).toBe('សៅរ៍');
+    expect(result.khmerMonth).toBe('ពិសាខ');
+    expect(result.moonStatus).toBe('រោច');
+    expect(result.moonDay).toBe(15);
+    expect(result.isSilDay).toBe(true);
+    expect(result.fullText).toBe(
+      'ថ្ងៃសៅរ៍ ១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី១៦ ខែឧសភា ឆ្នាំ២០២៦ថ្ងៃនេះ ជាថ្ងៃសីល',
     );
   });
 
