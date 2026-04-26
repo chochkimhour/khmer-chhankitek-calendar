@@ -1,14 +1,10 @@
 import {
-  ANIMAL_YEARS,
-  ANIMAL_YEARS_EN,
-  DAYS_OF_WEEK_EN,
-  DAYS_OF_WEEK_KM,
+  ANIMAL_YEARS_EN_BY_KM,
+  DAYS_OF_WEEK_EN_BY_KM,
   GREGORIAN_MONTHS_KM,
-  KHMER_MONTHS,
-  KHMER_MONTHS_EN,
+  KHMER_MONTHS_EN_BY_KM,
   MOON_STATUS_EN,
-  SAKS,
-  SAKS_EN,
+  SAKS_EN_BY_KM,
 } from './constants';
 import { toKhmerLunarDate } from './converter';
 import type { FormatOptions } from './types';
@@ -44,10 +40,10 @@ export function formatKhmerDate(
   let result: string;
 
   if (locale === 'en') {
-    const monthEn = KHMER_MONTHS_EN[KHMER_MONTHS.indexOf(khmerDate.khmerMonth)];
-    const animalEn = ANIMAL_YEARS_EN[ANIMAL_YEARS.indexOf(khmerDate.animalYear)];
-    const sakEn = SAKS_EN[SAKS.indexOf(khmerDate.sak)];
-    const dayNameEn = DAYS_OF_WEEK_EN[DAYS_OF_WEEK_KM.indexOf(khmerDate.dayOfWeek)];
+    const monthEn = KHMER_MONTHS_EN_BY_KM[khmerDate.khmerMonth];
+    const animalEn = ANIMAL_YEARS_EN_BY_KM[khmerDate.animalYear];
+    const sakEn = SAKS_EN_BY_KM[khmerDate.sak];
+    const dayNameEn = DAYS_OF_WEEK_EN_BY_KM[khmerDate.dayOfWeek];
 
     result = `${dayNameEn}, ${maybeKhmerNumber(khmerDate.moonDay, false)} ${MOON_STATUS_EN[khmerDate.moonStatus === 'កើត' ? 'waxing' : 'waning']} of ${monthEn}, Year of the ${animalEn}, ${sakEn}, BE ${maybeKhmerNumber(khmerDate.buddhistEraYear, false)}`;
   } else {
