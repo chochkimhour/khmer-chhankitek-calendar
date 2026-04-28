@@ -335,4 +335,4 @@ Dates before `1900-01-01` throw an error.
 
 MIT License.
 
-Copyright (c) 2026-present Choch Kimhour.
+Copyright (c) 2026 Choch Kimhour.
