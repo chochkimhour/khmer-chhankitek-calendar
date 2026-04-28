@@ -6,7 +6,7 @@
 ![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen?style=flat-square)
 ![types](https://img.shields.io/badge/types-TypeScript-blue?style=flat-square)
 ![node](https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square)
-[![source](https://img.shields.io/badge/source-GitLab-orange?style=flat-square)](https://gitlab.com/chochkimhour/khmer-chhankitek-calendar)
+[![source](https://img.shields.io/badge/source-GitHub-black?style=flat-square)](https://github.com/chochkimhour/khmer-chhankitek-calendar)
 
 Khmer Chhankitek calendar utilities for JavaScript and TypeScript.
 
