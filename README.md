@@ -1,24 +1,38 @@
 # khmer-chhankitek-calendar
 
-A small TypeScript library for converting Gregorian dates to the Khmer Chhankitek calendar, also known as the Khmer lunar calendar.
+![npm version](https://img.shields.io/npm/v/khmer-chhankitek-calendar?style=flat-square)
+![license](https://img.shields.io/npm/l/khmer-chhankitek-calendar?style=flat-square)
+![npm downloads](https://img.shields.io/npm/dm/khmer-chhankitek-calendar?style=flat-square)
+![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen?style=flat-square)
 
-It returns Khmer lunar month, moon status (`កើត` / `រោច`), moon day, Buddhist Era year, animal year, sak, Sil day status, formatted Khmer/English text, and Cambodian holiday information.
+Khmer Chhankitek calendar utilities for JavaScript and TypeScript.
 
-Created by **Choch Kimhour** from Cambodia.
+This package converts Gregorian dates to Khmer lunar dates, formats Khmer and English calendar text, detects `ថ្ងៃសីល`, returns Khmer public and lunar holidays, and works in modern Node.js and browser-based applications.
+
+## Why Developers Use It
+
+- Simple API with predictable output
+- Works in JavaScript and TypeScript
+- Suitable for backend and frontend applications
+- Useful for Khmer calendar UI, holiday logic, reports, dashboards, payroll tools, school systems, and business apps
+- No runtime dependencies
 
 ## Features
 
-- Convert Gregorian dates to Khmer lunar dates
-- Khmer month, moon status, moon day, animal year, sak, and Buddhist Era year
-- Sil day detection
-- Khmer leap-month support, including `បឋមាសាឍ` and `ទុតិយាសាឍ`
-- Cambodian public, religious, and traditional holiday helpers
-- Khmer and English date formatting
-- Khmer number conversion
-- TypeScript types included
-- Works with Node.js, CommonJS, ESM, browsers, and frontend frameworks
+- Convert Gregorian dates to Khmer lunar calendar dates from `1900-01-01` onward
+- Return structured Khmer calendar data for each date
+- Format calendar output in Khmer or English
+- Detect `ថ្ងៃសីល`
+- Include Khmer observance text in `fullText`
+- Return Khmer public, religious, and traditional holidays
+- Handle Khmer New Year boundaries with Songkran-based calculation
+- Handle leap-month years
+- Convert Western digits to Khmer digits
+- Ship built-in TypeScript declarations
+- Support ESM and CommonJS
+- Have zero runtime dependencies
 
-## Install
+## Installation
 
 ```bash
 npm install khmer-chhankitek-calendar
@@ -32,51 +46,69 @@ yarn add khmer-chhankitek-calendar
 pnpm add khmer-chhankitek-calendar
 ```
 
+## Compatibility
+
+You can use this package with:
+
+- JavaScript
+- TypeScript
+- Node.js
+- Browser bundlers
+- Angular
+- React
+- Next.js
+- Vue
+- Nuxt
+- Svelte
+- Express
+
+The package exports:
+
+- ESM: `dist/index.js`
+- CommonJS: `dist/index.cjs`
+- Type definitions: `dist/index.d.ts`
+
 ## Quick Start
 
-```ts
+### JavaScript
+
+```js
 import { formatKhmerDate, toKhmerLunarDate } from 'khmer-chhankitek-calendar';
 
-const lunarDate = toKhmerLunarDate('2026-04-16');
+const result = toKhmerLunarDate('2026-05-01');
 
-console.log(lunarDate.fullText);
-// ថ្ងៃព្រហស្បតិ៍ ១៤រោច ខែចេត្រ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១៦ ខែមេសា ឆ្នាំ២០២៦
+console.log(result.fullText);
+// ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី
 
-console.log(lunarDate.isSilDay);
-// true
-
-console.log(formatKhmerDate('2026-04-16', { locale: 'en' }));
-// Thursday, 14 Waning of Chet, Year of the Horse, Atthasak, BE 2569
+console.log(formatKhmerDate('2026-05-02', { locale: 'en' }));
+// Saturday, 1 Waning of Vesak, Year of the Horse, Atthasak, BE 2570
 ```
 
-## Date Input
+### CommonJS
 
-Most functions accept:
+```js
+const { toKhmerLunarDate, formatKhmerDate } = require('khmer-chhankitek-calendar');
 
-- `Date`
-- ISO date string, for example `'2026-04-16'`
-- timestamp number
+const result = toKhmerLunarDate('2026-05-16');
+console.log(result.isSilDay);
+console.log(formatKhmerDate('2026-05-16'));
+```
 
-Use `YYYY-MM-DD` strings when you want an exact calendar date without timezone surprises.
+### TypeScript
 
 ```ts
-toKhmerLunarDate('2026-05-20');
-toKhmerLunarDate(new Date(2026, 4, 20));
-toKhmerLunarDate(Date.now());
+import { toKhmerLunarDate } from 'khmer-chhankitek-calendar';
+
+const result = toKhmerLunarDate('2026-05-20');
+
+result.khmerMonth;
+result.buddhistEraYear;
+result.holidays;
 ```
 
-Invalid dates throw an error.
+## Basic Usage
 
-```ts
-toKhmerLunarDate('2026-02-30');
-// Error: Invalid date provided.
-```
-
-## API
-
-### `toKhmerLunarDate(date)`
-
-Converts a Gregorian date to a detailed Khmer lunar date object.
+### Convert a Gregorian date
 
 ```ts
 import { toKhmerLunarDate } from 'khmer-chhankitek-calendar';
@@ -85,8 +117,6 @@ const result = toKhmerLunarDate('2026-05-20');
 
 console.log(result);
 ```
-
-Example result:
 
 ```ts
 {
@@ -106,29 +136,100 @@ Example result:
 }
 ```
 
-### `formatKhmerDate(date, options?)`
-
-Formats a date as a readable string.
+### Format Khmer text
 
 ```ts
 import { formatKhmerDate } from 'khmer-chhankitek-calendar';
 
-formatKhmerDate('2026-12-09');
-// ថ្ងៃពុធ ១៥រោច ខែកត្តិក ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០
-
-formatKhmerDate('2026-12-09', {
-  includeGregorianDate: true,
-});
-// ថ្ងៃពុធ ១៥រោច ខែកត្តិក ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី២០២៦-១២-០៩
-
-formatKhmerDate('2026-12-09', {
-  locale: 'en',
-  includeGregorianDate: true,
-});
-// Wednesday, 15 Waning of Kattik, Year of the Horse, Atthasak, BE 2570 (2026-12-09)
+formatKhmerDate('2026-05-16');
+// ថ្ងៃសៅរ៍ ១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០
 ```
 
-Options:
+### Format English text
+
+```ts
+import { formatKhmerDate } from 'khmer-chhankitek-calendar';
+
+formatKhmerDate('2026-05-16', { locale: 'en' });
+// Saturday, 15 Waning of Vesak, Year of the Horse, Atthasak, BE 2570
+```
+
+### Include Gregorian date
+
+```ts
+import { formatKhmerDate } from 'khmer-chhankitek-calendar';
+
+formatKhmerDate('2026-12-09', {
+  includeGregorianDate: true,
+});
+// ថ្ងៃពុធ ១៥រោច ខែកត្តិក ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី៩ ខែធ្នូ ឆ្នាំ២០២៦
+```
+
+### Include holiday names
+
+```ts
+import { formatKhmerDate } from 'khmer-chhankitek-calendar';
+
+formatKhmerDate('2026-05-01', {
+  includeHoliday: true,
+});
+// ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ [ទិវាពលកម្មអន្តរជាតិ, វិសាខបូជា]
+```
+
+### Get holidays for a year
+
+```ts
+import { getKhmerHolidays } from 'khmer-chhankitek-calendar';
+
+const holidays = getKhmerHolidays(2026);
+
+console.log(holidays.filter((holiday) => holiday.date === '2026-05-01'));
+```
+
+## Included Examples
+
+This repository includes ready-to-read examples in the [examples](D:/Projects/khmer-chhankitek-calendar/examples) folder:
+
+- [Node example](D:/Projects/khmer-chhankitek-calendar/examples/node.ts)
+- [Browser example](D:/Projects/khmer-chhankitek-calendar/examples/browser.html)
+- [Angular example](D:/Projects/khmer-chhankitek-calendar/examples/angular.component.ts)
+- [React example](D:/Projects/khmer-chhankitek-calendar/examples/react.tsx)
+
+## API
+
+### `toKhmerLunarDate(date)`
+
+Converts a Gregorian date into a Khmer lunar date object.
+
+Accepted input:
+
+- `Date`
+- `string` in ISO format such as `'2026-05-01'`
+- `number` timestamp
+
+Returns:
+
+```ts
+interface KhmerLunarDate {
+  gregorianDate: string;
+  dayOfWeek: DayOfWeek;
+  buddhistEraYear: number;
+  khmerYear: number;
+  khmerMonth: KhmerMonth;
+  moonStatus: 'កើត' | 'រោច';
+  moonDay: number;
+  animalYear: AnimalYear;
+  sak: Sak;
+  isLeapMonth: boolean;
+  isSilDay: boolean;
+  holidays: KhmerHoliday[];
+  fullText: string;
+}
+```
+
+### `formatKhmerDate(date, options?)`
+
+Formats a Gregorian date as Khmer or English text.
 
 ```ts
 type FormatOptions = {
@@ -141,227 +242,94 @@ type FormatOptions = {
 
 Notes:
 
-- `locale: 'km'` returns Khmer text. `km` is the ISO language code for Khmer.
-- `locale: 'en'` returns English text.
-- `kh` is a country code for Cambodia, not the Khmer language code.
-- `useKhmerNumbers` defaults to `true` for Khmer and `false` for English.
+- `locale` defaults to `'km'`
+- `useKhmerNumbers` defaults to `true` for Khmer and `false` for English
+- `includeGregorianDate` appends the Gregorian date text
+- `includeHoliday` appends holiday names when present
 
 ### Helper Functions
 
 ```ts
-import {
-  getAnimalYear,
-  getKhmerHolidays,
-  getKhmerMonth,
-  getKhmerYear,
-  getSak,
-  isSilDay,
-  toKhmerNumber,
-} from 'khmer-chhankitek-calendar';
-
-getKhmerMonth('2026-04-16');
-// ចេត្រ
-
-getKhmerYear('2026-04-16');
-// 2569
-
-getAnimalYear('2026-04-16');
-// មមី
-
-getSak('2026-04-16');
-// អដ្ឋស័ក
-
-isSilDay('2026-04-16');
-// true
-
-toKhmerNumber(2026);
-// ២០២៦
-
-getKhmerHolidays(2026);
-// KhmerHoliday[]
+getKhmerMonth(date);
+getKhmerYear(date);
+getAnimalYear(date);
+getSak(date);
+isSilDay(date);
+getKhmerHolidays(year);
+toKhmerNumber(value);
 ```
 
-## Holidays
+## Framework Example
 
-`getKhmerHolidays(year)` returns Cambodian holidays for a Gregorian year.
+### React / Next.js
 
-```ts
-import { getKhmerHolidays } from 'khmer-chhankitek-calendar';
+```tsx
+import { formatKhmerDate } from 'khmer-chhankitek-calendar';
 
-const holidays = getKhmerHolidays(2026);
-
-console.log(holidays.filter((holiday) => holiday.date === '2026-05-01'));
-// [
-//   {
-//     date: '2026-05-01',
-//     nameKm: 'ទិវាពលកម្មអន្តរជាតិ',
-//     nameEn: 'International Labour Day',
-//     type: 'public'
-//   },
-//   {
-//     date: '2026-05-01',
-//     nameKm: 'វិសាខបូជា',
-//     nameEn: 'Visak Bochea Day',
-//     type: 'public'
-//   }
-// ]
-```
-
-Holiday type:
-
-```ts
-interface KhmerHoliday {
-  date: string;
-  nameKm: string;
-  nameEn?: string;
-  type: 'public' | 'religious' | 'traditional';
+export function KhmerDateLabel() {
+  return <p>{formatKhmerDate('2026-05-01')}</p>;
 }
 ```
 
-Holiday notes:
-
-- Fixed public holidays are generated automatically for each Gregorian year.
-- Lunar holidays such as Meak Bochea, Visak Bochea, Royal Ploughing Ceremony, Pchum Ben, and Water Festival are derived dynamically from Khmer lunar dates.
-- The package does not need a new hardcoded holiday table every year.
-- Cambodian public holidays can still change by official government announcement. If you find a mismatch with an official calendar, please report the date and source so it can be added to the test suite.
-
-## Khmer New Year
-
-Khmer New Year is returned as public holidays.
+### Angular
 
 ```ts
-getKhmerHolidays(2026)
-  .filter((holiday) => holiday.nameEn === 'Khmer New Year')
-  .map((holiday) => holiday.date);
-// ['2026-04-14', '2026-04-15', '2026-04-16']
+import { Component } from '@angular/core';
+import { formatKhmerDate } from 'khmer-chhankitek-calendar';
+
+@Component({
+  selector: 'app-khmer-date',
+  template: `<p>{{ khmerDate }}</p>`,
+})
+export class KhmerDateComponent {
+  khmerDate = formatKhmerDate('2026-05-01');
+}
 ```
 
-For supported Gregorian leap years, Khmer New Year can include four days.
-
-```ts
-getKhmerHolidays(2024)
-  .filter((holiday) => holiday.nameEn === 'Khmer New Year')
-  .map((holiday) => holiday.date);
-// ['2024-04-13', '2024-04-14', '2024-04-15', '2024-04-16']
-```
-
-## Buddhist Era Year Boundary
-
-Animal year and sak can change at Khmer New Year, while the Buddhist Era year may still follow the lunar month boundary.
-
-For example, this date is after Khmer New Year in the Gregorian calendar, but it is still in Khmer month `ចេត្រ`, so the Buddhist Era year remains `២៥៦៩`.
-
-```ts
-toKhmerLunarDate('2026-04-16').fullText;
-// ថ្ងៃព្រហស្បតិ៍ ១៤រោច ខែចេត្រ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១៦ ខែមេសា ឆ្នាំ២០២៦
-```
-
-## Usage Examples
-
-### Node.js / ESM
-
-```ts
-import { toKhmerLunarDate } from 'khmer-chhankitek-calendar';
-
-console.log(toKhmerLunarDate('2026-09-10').fullText);
-```
-
-### CommonJS
+### Node.js / Express
 
 ```js
-const { toKhmerLunarDate } = require('khmer-chhankitek-calendar');
+import express from 'express';
+import { toKhmerLunarDate } from 'khmer-chhankitek-calendar';
 
-console.log(toKhmerLunarDate('2026-09-10').fullText);
+const app = express();
+
+app.get('/khmer-date/:date', (req, res) => {
+  res.json(toKhmerLunarDate(req.params.date));
+});
 ```
 
-### Browser / Bundler
+## Year Boundary Notes
 
-```html
-<script type="module">
-  import { formatKhmerDate } from './dist/index.js';
+- `animalYear` and `sak` change at Khmer New Year
+- `buddhistEraYear` changes later, at `១រោច ខែពិសាខ`
+- `fullText` may include Khmer observance text such as `ថ្ងៃនេះ ជាថ្ងៃសីល` or `ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី`
 
-  document.body.textContent = formatKhmerDate('2026-04-16', {
-    includeGregorianDate: true,
-    includeHoliday: true,
-  });
-</script>
-```
-
-For applications, use a bundler such as Vite, Next.js, Nuxt, Astro, webpack, Rollup, or similar.
-
-## TypeScript
-
-The package includes TypeScript declarations.
+Examples:
 
 ```ts
-import type { FormatOptions, KhmerHoliday, KhmerLunarDate, KhmerMonth } from 'khmer-chhankitek-calendar';
+toKhmerLunarDate('2026-05-01').buddhistEraYear;
+// 2569
+
+toKhmerLunarDate('2026-05-02').buddhistEraYear;
+// 2570
 ```
 
-Important types:
+## Supported Range
 
-```ts
-type MoonStatus = 'កើត' | 'រោច';
+- `1900-01-01` and later
 
-interface KhmerLunarDate {
-  gregorianDate: string;
-  dayOfWeek: string;
-  buddhistEraYear: number;
-  khmerYear: number;
-  khmerMonth: KhmerMonth;
-  moonStatus: MoonStatus;
-  moonDay: number;
-  animalYear: string;
-  sak: string;
-  isLeapMonth: boolean;
-  isSilDay: boolean;
-  holidays: KhmerHoliday[];
-  fullText: string;
-}
-```
+Dates before `1900-01-01` throw an error.
 
-## Accuracy
+## Publishing Notes
 
-This library uses a Khmer Chhankitek civil-calendar method based on traditional year types and month lengths. It does not simply count Gregorian days or rely on one fixed lunar-month pattern.
-
-Validated examples include:
-
-```txt
-2026-04-16 -> ថ្ងៃព្រហស្បតិ៍ ១៤រោច ខែចេត្រ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១៦ ខែមេសា ឆ្នាំ២០២៦
-2026-05-20 -> ថ្ងៃពុធ ៤កើត ខែជេស្ឋ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី២០ ខែឧសភា ឆ្នាំ២០២៦
-2026-09-10 -> ថ្ងៃព្រហស្បតិ៍ ១៣រោច ខែស្រាពណ៍ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី១០ ខែកញ្ញា ឆ្នាំ២០២៦
-2026-12-09 -> ថ្ងៃពុធ ១៥រោច ខែកត្តិក ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី៩ ខែធ្នូ ឆ្នាំ២០២៦
-```
-
-Traditional Khmer calendars and Cambodian public holidays can still contain official annual adjustments. If you find a mismatch with an official Cambodian calendar, please report the date and source so it can be added to the test suite.
-
-## Development
-
-```bash
-npm install
-npm test
-npm run typecheck
-npm run lint
-npm run build
-```
-
-Scripts:
-
-- `npm test`: run the test suite
-- `npm run typecheck`: run TypeScript checks
-- `npm run lint`: run ESLint
-- `npm run build`: build ESM, CommonJS, and type declarations
-- `npm run dev`: watch build
-
-Before publishing, the package runs:
-
-```bash
-npm run lint && npm run typecheck && npm test && npm run build
-```
+- The package is published as ESM and CommonJS
+- TypeScript declarations are included
+- Build output is generated into `dist/`
+- Source code stays in `src/`
 
 ## License
 
-MIT
+MIT License.
 
-## Author
-
-Created and maintained by **Choch Kimhour** from Cambodia.
+Copyright (c) 2026 Choch Kimhour.

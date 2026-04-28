@@ -1,8 +1,9 @@
 {
   "name": "khmer-chhankitek-calendar",
-  "version": "0.1.2",
-  "description": "A clean, accurate, framework-agnostic TypeScript library for converting Gregorian dates to Khmer Chhankitek / Khmer lunar calendar dates.",
+  "version": "0.1.7",
+  "description": "Khmer lunar calendar utilities for JavaScript and TypeScript with Khmer date conversion, formatting, holy days, and holiday support.",
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,7 +15,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup",
@@ -33,15 +36,36 @@
     "chankitek",
     "khmer-calendar",
     "khmer-lunar-calendar",
+    "khmer-chhankitek-calendar",
     "lunar",
     "lunar-calendar",
     "cambodia",
     "cambodian-calendar",
+    "khmer-date",
+    "khmer-lunar-date",
+    "khmer-holiday",
+    "buddhist-calendar",
+    "khmer-buddhist-era",
+    "holiday",
+    "typescript",
+    "javascript",
+    "nodejs",
+    "browser",
+    "react",
+    "angular",
+    "vue",
+    "nextjs",
+    "nuxt",
+    "svelte",
+    "express",
     "date",
-    "typescript"
+    "typescript-library"
   ],
   "author": "Choch Kimhour <Cambodia>",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "homepage": "https://www.npmjs.com/package/khmer-chhankitek-calendar",
   "repository": {
     "type": "git",

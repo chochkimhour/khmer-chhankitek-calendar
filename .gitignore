@@ -2,9 +2,14 @@
 node_modules/
 
 # Build/test output
+dist/
 coverage/
 .nyc_output/
+.eslintcache
 .tmp/
+.tmp*/
+tmp/
+*.tsbuildinfo
 *.tgz
 
 # Logs
@@ -18,9 +23,6 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
-
-# TypeScript
-*.tsbuildinfo
 
 # OS/editor files
 .DS_Store
