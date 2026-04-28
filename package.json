@@ -1,6 +1,6 @@
 {
   "name": "khmer-chhankitek-calendar",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Khmer lunar calendar utilities for JavaScript and TypeScript with Khmer date conversion, formatting, holy days, and holiday support.",
   "type": "module",
   "sideEffects": false,
