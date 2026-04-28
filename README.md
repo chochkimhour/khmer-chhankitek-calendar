@@ -4,6 +4,9 @@
 ![license](https://img.shields.io/npm/l/khmer-chhankitek-calendar?style=flat-square)
 ![npm downloads](https://img.shields.io/npm/dm/khmer-chhankitek-calendar?style=flat-square)
 ![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen?style=flat-square)
+![types](https://img.shields.io/badge/types-TypeScript-blue?style=flat-square)
+![node](https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square)
+[![source](https://img.shields.io/badge/source-GitLab-orange?style=flat-square)](https://gitlab.com/chochkimhour/khmer-chhankitek-calendar)
 
 Khmer Chhankitek calendar utilities for JavaScript and TypeScript.
 
@@ -332,4 +335,4 @@ Dates before `1900-01-01` throw an error.
 
 MIT License.
 
-Copyright (c) 2026 Choch Kimhour.
+Copyright (c) 2026-present Choch Kimhour.
