@@ -18,6 +18,37 @@ describe('formatter', () => {
     expect(result).toContain('Asadha');
   });
 
+  it('supports multiple Khmer output formats', () => {
+    expect(formatKhmerDate('2026-05-16', { format: 'short' })).toBe('១៥រោច ពិសាខ ២៥៧០');
+    expect(formatKhmerDate('2026-05-16', { format: 'medium' })).toBe(
+      '១៥រោច ខែពិសាខ ព.ស. ២៥៧០',
+    );
+    expect(formatKhmerDate('2026-05-16', { format: 'long' })).toBe(
+      '១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ព.ស. ២៥៧០',
+    );
+  });
+
+  it('supports multiple English output formats', () => {
+    expect(formatKhmerDate('2026-05-16', { locale: 'en', format: 'short' })).toBe(
+      '15 Waning, Vesak, BE 2570',
+    );
+    expect(formatKhmerDate('2026-05-16', { locale: 'en', format: 'medium' })).toBe(
+      '15 Waning of Vesak, BE 2570',
+    );
+    expect(formatKhmerDate('2026-05-16', { locale: 'en', format: 'long' })).toBe(
+      '15 Waning of Vesak, Year of the Horse, Atthasak, BE 2570',
+    );
+  });
+
+  it('supports Western digits in Khmer formatted output', () => {
+    const result = formatKhmerDate('2026-05-16', {
+      format: 'medium',
+      useKhmerNumbers: false,
+    });
+
+    expect(result).toBe('15រោច ខែពិសាខ ព.ស. 2570');
+  });
+
   it('formats English weekday from the normalized calendar date', () => {
     const result = formatKhmerDate('2026-09-10', { locale: 'en' });
 

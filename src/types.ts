@@ -44,6 +44,8 @@ export type MoonStatus = 'កើត' | 'រោច';
 
 export type DayOfWeek = 'អាទិត្យ' | 'ចន្ទ' | 'អង្គារ' | 'ពុធ' | 'ព្រហស្បតិ៍' | 'សុក្រ' | 'សៅរ៍';
 
+export type DateInput = Date | string | number;
+
 export interface KhmerHoliday {
   date: string;
   nameKm: string;
@@ -55,20 +57,30 @@ export interface KhmerLunarDate {
   gregorianDate: string;
   dayOfWeek: DayOfWeek;
   buddhistEraYear: number;
+  buddhistEraYearKhmer: string;
   khmerYear: number;
+  khmerYearKhmer: string;
   khmerMonth: KhmerMonth;
   moonStatus: MoonStatus;
   moonDay: number;
+  moonDayKhmer: string;
   animalYear: AnimalYear;
   sak: Sak;
   isLeapMonth: boolean;
   isSilDay: boolean;
   holidays: KhmerHoliday[];
+  lunarDateText: string;
+  gregorianDateText: string;
+  gregorianDayText: string;
+  gregorianMonthText: string;
+  gregorianYearText: string;
+  observanceText?: string;
   fullText: string;
 }
 
 export interface FormatOptions {
   locale?: 'km' | 'en';
+  format?: 'full' | 'long' | 'medium' | 'short';
   useKhmerNumbers?: boolean;
   includeGregorianDate?: boolean;
   includeHoliday?: boolean;

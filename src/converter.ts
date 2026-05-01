@@ -5,7 +5,15 @@ import {
   MOON_STATUS_KM,
   SAKS,
 } from './constants';
-import type { AnimalYear, DayOfWeek, KhmerHoliday, KhmerLunarDate, KhmerMonth, Sak } from './types';
+import type {
+  AnimalYear,
+  DateInput,
+  DayOfWeek,
+  KhmerHoliday,
+  KhmerLunarDate,
+  KhmerMonth,
+  Sak,
+} from './types';
 import { formatISODate, MIN_SUPPORTED_GREGORIAN_YEAR, normalizeDate } from './utils/date';
 import { toKhmerNumber } from './utils/khmer-number';
 
@@ -627,8 +635,7 @@ function getObservanceText(
   return undefined;
 }
 
-function buildKhmerFullText(
-  date: Date,
+function buildKhmerLunarDateText(
   dayOfWeek: DayOfWeek,
   moonDay: number,
   moonStatus: KhmerLunarDate['moonStatus'],
@@ -636,15 +643,38 @@ function buildKhmerFullText(
   animalYear: AnimalYear,
   sak: Sak,
   buddhistEraYear: number,
+): string {
+  return `ថ្ងៃ${dayOfWeek} ${toKhmerNumber(moonDay)}${moonStatus} ខែ${khmerMonth} ឆ្នាំ${animalYear} ${sak} ពុទ្ធសករាជ ${toKhmerNumber(buddhistEraYear)}`;
+}
+
+function buildKhmerGregorianDateText(date: Date): string {
+  const dayText = buildKhmerGregorianDayValue(date);
+  const monthText = buildKhmerGregorianMonthValue(date);
+  const yearText = buildKhmerGregorianYearValue(date);
+
+  return `ថ្ងៃទី${dayText} ខែ${monthText} ឆ្នាំ${yearText}`;
+}
+
+function buildKhmerGregorianDayValue(date: Date): string {
+  return toKhmerNumber(date.getDate());
+}
+
+function buildKhmerGregorianMonthValue(date: Date): string {
+  return GREGORIAN_MONTHS_KM[date.getMonth()];
+}
+
+function buildKhmerGregorianYearValue(date: Date): string {
+  return toKhmerNumber(date.getFullYear());
+}
+
+function buildKhmerFullText(
+  lunarDateText: string,
+  gregorianDateText: string,
   observanceText?: string,
 ): string {
-  const gregorianDayKhmer = toKhmerNumber(date.getDate());
-  const gregorianMonthKm = GREGORIAN_MONTHS_KM[date.getMonth()];
-  const gregorianYearKhmer = toKhmerNumber(date.getFullYear());
+  const baseText = `${lunarDateText} ត្រូវនឹង${gregorianDateText}`;
 
-  const baseText = `ថ្ងៃ${dayOfWeek} ${toKhmerNumber(moonDay)}${moonStatus} ខែ${khmerMonth} ឆ្នាំ${animalYear} ${sak} ពុទ្ធសករាជ ${toKhmerNumber(buddhistEraYear)} ត្រូវនឹងថ្ងៃទី${gregorianDayKhmer} ខែ${gregorianMonthKm} ឆ្នាំ${gregorianYearKhmer}`;
-
-  return observanceText ? `${baseText}${observanceText}` : baseText;
+  return observanceText ? `${baseText} ${observanceText}` : baseText;
 }
 
 function convertCore(date: Date): Omit<KhmerLunarDate, 'holidays'> {
@@ -660,30 +690,45 @@ function convertCore(date: Date): Omit<KhmerLunarDate, 'holidays'> {
   const dayOfWeek = DAYS_OF_WEEK_KM[date.getDay()];
   const isSilDay = isBuddhistHolyDay(khmerCivilDate.monthDay, khmerCivilDate.monthLength);
   const observanceText = getObservanceText(khmerCivilDate.monthDay, moonStatus, isSilDay);
+  const buddhistEraYearKhmer = toKhmerNumber(buddhistEraYear);
+  const khmerYearKhmer = toKhmerNumber(khmerYear);
+  const moonDayKhmer = toKhmerNumber(moonDay);
+  const lunarDateText = buildKhmerLunarDateText(
+    dayOfWeek,
+    moonDay,
+    moonStatus,
+    khmerCivilDate.khmerMonth,
+    animalYear,
+    sak,
+    buddhistEraYear,
+  );
+  const gregorianDateText = buildKhmerGregorianDateText(date);
+  const gregorianDayText = buildKhmerGregorianDayValue(date);
+  const gregorianMonthText = buildKhmerGregorianMonthValue(date);
+  const gregorianYearText = buildKhmerGregorianYearValue(date);
 
   return {
     gregorianDate: formatISODate(date),
     dayOfWeek,
     buddhistEraYear,
+    buddhistEraYearKhmer,
     khmerYear,
+    khmerYearKhmer,
     khmerMonth: khmerCivilDate.khmerMonth,
     moonStatus,
     moonDay,
+    moonDayKhmer,
     animalYear,
     sak,
     isLeapMonth: isLeapAsadhaMonth(khmerCivilDate.khmerMonth),
     isSilDay,
-    fullText: buildKhmerFullText(
-      date,
-      dayOfWeek,
-      moonDay,
-      moonStatus,
-      khmerCivilDate.khmerMonth,
-      animalYear,
-      sak,
-      buddhistEraYear,
-      observanceText,
-    ),
+    lunarDateText,
+    gregorianDateText,
+    gregorianDayText,
+    gregorianMonthText,
+    gregorianYearText,
+    observanceText,
+    fullText: buildKhmerFullText(lunarDateText, gregorianDateText, observanceText),
   };
 }
 
@@ -815,7 +860,7 @@ function buildHolidaysForYear(year: number): KhmerHoliday[] {
  * Highly specialized edge cases of the traditional calendar may still benefit
  * from future refinement.
  */
-export function toKhmerLunarDate(inputDate: Date | string | number): KhmerLunarDate {
+export function toKhmerLunarDate(inputDate: DateInput): KhmerLunarDate {
   const date = normalizeDate(inputDate);
   const lunar = convertCore(date);
   const holidays = getKhmerHolidays(date.getFullYear()).filter(
@@ -828,23 +873,23 @@ export function toKhmerLunarDate(inputDate: Date | string | number): KhmerLunarD
   };
 }
 
-export function getKhmerMonth(inputDate: Date | string | number): KhmerMonth {
+export function getKhmerMonth(inputDate: DateInput): KhmerMonth {
   return toKhmerLunarDate(inputDate).khmerMonth;
 }
 
-export function getKhmerYear(inputDate: Date | string | number): number {
+export function getKhmerYear(inputDate: DateInput): number {
   return toKhmerLunarDate(inputDate).khmerYear;
 }
 
-export function getAnimalYear(inputDate: Date | string | number): AnimalYear {
+export function getAnimalYear(inputDate: DateInput): AnimalYear {
   return toKhmerLunarDate(inputDate).animalYear;
 }
 
-export function getSak(inputDate: Date | string | number): Sak {
+export function getSak(inputDate: DateInput): Sak {
   return toKhmerLunarDate(inputDate).sak;
 }
 
-export function isSilDay(inputDate: Date | string | number): boolean {
+export function isSilDay(inputDate: DateInput): boolean {
   return toKhmerLunarDate(inputDate).isSilDay;
 }
 

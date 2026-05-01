@@ -19,9 +19,35 @@ describe('converter', () => {
     expect(result.gregorianDate).toBe('2026-04-14');
   });
 
+  it('supports UTC ISO date-time input', () => {
+    const result = toKhmerLunarDate('2026-05-01T00:00:00.000Z');
+
+    expect(result.gregorianDate).toBe('2026-05-01');
+    expect(result.khmerMonth).toBe('ពិសាខ');
+    expect(result.moonStatus).toBe('កើត');
+    expect(result.moonDay).toBe(15);
+  });
+
+  it('normalizes timezone-offset ISO date-time input by UTC date', () => {
+    const result = toKhmerLunarDate('2026-05-01T23:30:00-02:00');
+
+    expect(result.gregorianDate).toBe('2026-05-02');
+  });
+
+  it('supports Date object and timestamp inputs', () => {
+    const dateObject = toKhmerLunarDate(new Date(2026, 4, 1));
+    const timestamp = toKhmerLunarDate(new Date(2026, 4, 1).getTime());
+
+    expect(dateObject.gregorianDate).toBe('2026-05-01');
+    expect(timestamp.gregorianDate).toBe('2026-05-01');
+  });
+
   it('throws on invalid date input', () => {
     expect(() => toKhmerLunarDate('invalid-date')).toThrow('Invalid date provided.');
     expect(() => toKhmerLunarDate('2026-02-30')).toThrow('Invalid date provided.');
+    expect(() => toKhmerLunarDate('2026-02-30T00:00:00.000Z')).toThrow(
+      'Invalid date provided.',
+    );
   });
 
   it('rejects Gregorian dates before the supported epoch', () => {
@@ -48,7 +74,10 @@ describe('converter', () => {
     expect(result.khmerMonth).toBe('ជេស្ឋ');
     expect(result.moonStatus).toBe('កើត');
     expect(result.moonDay).toBe(4);
+    expect(result.moonDayKhmer).toBe('៤');
     expect(result.isLeapMonth).toBe(false);
+    expect(result.buddhistEraYearKhmer).toBe('២៥៧០');
+    expect(result.khmerYearKhmer).toBe('២៥៧០');
     expect(result.fullText).toBe(
       'ថ្ងៃពុធ ៤កើត ខែជេស្ឋ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី២០ ខែឧសភា ឆ្នាំ២០២៦',
     );
@@ -113,7 +142,7 @@ describe('converter', () => {
     expect(result.sak).toBe('អដ្ឋស័ក');
     expect(result.buddhistEraYear).toBe(2569);
     expect(result.fullText).toBe(
-      'ថ្ងៃព្រហស្បតិ៍ ១៤រោច ខែចេត្រ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១៦ ខែមេសា ឆ្នាំ២០២៦ថ្ងៃនេះ ជាថ្ងៃសីល',
+      'ថ្ងៃព្រហស្បតិ៍ ១៤រោច ខែចេត្រ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១៦ ខែមេសា ឆ្នាំ២០២៦ ថ្ងៃនេះ ជាថ្ងៃសីល',
     );
   });
 
@@ -137,9 +166,28 @@ describe('converter', () => {
     expect(result.isSilDay).toBe(true);
     expect(result.buddhistEraYear).toBe(2569);
     expect(result.khmerYear).toBe(2569);
-    expect(result.fullText).toBe(
-      'ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី',
+    expect(result.lunarDateText).toBe(
+      'ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩',
     );
+    expect(result.gregorianDateText).toBe('ថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦');
+    expect(result.observanceText).toBe('ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី');
+    expect(result.fullText).toBe(
+      'ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦ ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី',
+    );
+  });
+
+  it('returns split display text without observance text on normal days', () => {
+    const result = toKhmerLunarDate('2026-05-20');
+
+    expect(result.lunarDateText).toBe(
+      'ថ្ងៃពុធ ៤កើត ខែជេស្ឋ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០',
+    );
+    expect(result.gregorianDateText).toBe('ថ្ងៃទី២០ ខែឧសភា ឆ្នាំ២០២៦');
+    expect(result.gregorianDayText).toBe('២០');
+    expect(result.gregorianMonthText).toBe('ឧសភា');
+    expect(result.gregorianYearText).toBe('២០២៦');
+    expect(result.observanceText).toBeUndefined();
+    expect(result.fullText).toBe(`${result.lunarDateText} ត្រូវនឹង${result.gregorianDateText}`);
   });
 
   it('annotates waning holy days with the generic sil text', () => {
@@ -151,7 +199,7 @@ describe('converter', () => {
     expect(result.moonDay).toBe(15);
     expect(result.isSilDay).toBe(true);
     expect(result.fullText).toBe(
-      'ថ្ងៃសៅរ៍ ១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី១៦ ខែឧសភា ឆ្នាំ២០២៦ថ្ងៃនេះ ជាថ្ងៃសីល',
+      'ថ្ងៃសៅរ៍ ១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី១៦ ខែឧសភា ឆ្នាំ២០២៦ ថ្ងៃនេះ ជាថ្ងៃសីល',
     );
   });
 
