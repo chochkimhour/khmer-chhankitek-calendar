@@ -189,15 +189,15 @@ result.fullText;
 
 Use these fields when you need to build your own UI layout:
 
-| Field | Example | Meaning |
-| --- | --- | --- |
-| `lunarDateText` | `ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩` | Full Khmer lunar date text |
-| `gregorianDateText` | `ថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦` | Full Khmer Gregorian date text |
-| `gregorianDayText` | `១` | Gregorian day as Khmer digits only |
-| `gregorianMonthText` | `ឧសភា` | Gregorian month name only |
-| `gregorianYearText` | `២០២៦` | Gregorian year as Khmer digits only |
-| `observanceText` | `ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី` | Present only when the date has observance text |
-| `fullText` | `ថ្ងៃសុក្រ ... ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី` | Combined display sentence |
+| Field                | Example                                                    | Meaning                                        |
+| -------------------- | ---------------------------------------------------------- | ---------------------------------------------- |
+| `lunarDateText`      | `ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩` | Full Khmer lunar date text                     |
+| `gregorianDateText`  | `ថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦`                                 | Full Khmer Gregorian date text                 |
+| `gregorianDayText`   | `១`                                                        | Gregorian day as Khmer digits only             |
+| `gregorianMonthText` | `ឧសភា`                                                     | Gregorian month name only                      |
+| `gregorianYearText`  | `២០២៦`                                                     | Gregorian year as Khmer digits only            |
+| `observanceText`     | `ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី`                           | Present only when the date has observance text |
+| `fullText`           | `ថ្ងៃសុក្រ ... ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី`             | Combined display sentence                      |
 
 ### Supported date inputs
 
@@ -377,12 +377,12 @@ Notes:
 
 Formatter output styles:
 
-| Option | Khmer example |
-| --- | --- |
-| `full` | `ថ្ងៃសៅរ៍ ១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០` |
-| `long` | `១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ព.ស. ២៥៧០` |
-| `medium` | `១៥រោច ខែពិសាខ ព.ស. ២៥៧០` |
-| `short` | `១៥រោច ពិសាខ ២៥៧០` |
+| Option   | Khmer example                                             |
+| -------- | --------------------------------------------------------- |
+| `full`   | `ថ្ងៃសៅរ៍ ១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០` |
+| `long`   | `១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ព.ស. ២៥៧០`                |
+| `medium` | `១៥រោច ខែពិសាខ ព.ស. ២៥៧០`                                 |
+| `short`  | `១៥រោច ពិសាខ ២៥៧០`                                        |
 
 ### Helper Functions
 
@@ -469,4 +469,4 @@ Dates before `1900-01-01` throw an error.
 
 MIT License.
 
-Copyright (c) 2026 Choch Kimhour.
+Copyright (c) 2026.
