@@ -10,7 +10,7 @@
 
 Khmer Chhankitek calendar utilities for JavaScript and TypeScript.
 
-This package converts Gregorian dates to Khmer lunar dates, formats Khmer and English calendar text in multiple output styles, detects `ថ្ងៃសីល`, returns Khmer public and lunar holidays, and works in modern Node.js and browser-based applications.
+This package converts Gregorian dates to Khmer lunar dates, formats Khmer and English calendar text in multiple output styles, detects observance days, returns Khmer public and lunar holidays, and works in modern Node.js and browser-based applications.
 
 ## Why Use It
 
@@ -25,7 +25,7 @@ This package converts Gregorian dates to Khmer lunar dates, formats Khmer and En
 - Convert Gregorian dates to Khmer lunar calendar dates from `1900-01-01` onward
 - Return structured Khmer calendar data for each date, including ready-to-render split text fields
 - Format calendar output in Khmer or English with `full`, `long`, `medium`, and `short` styles
-- Detect `ថ្ងៃសីល`
+- Detect observance days
 - Include Khmer observance text as a separate field and in `fullText`
 - Return Khmer public, religious, and traditional holidays
 - Handle Khmer New Year boundaries with Songkran-based calculation
@@ -81,7 +81,6 @@ import { formatKhmerDate, toKhmerLunarDate } from 'khmer-chhankitek-calendar';
 const result = toKhmerLunarDate('2026-05-01');
 
 console.log(result.fullText);
-// ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦ ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី
 
 console.log(formatKhmerDate('2026-05-02', { locale: 'en' }));
 // Saturday, 1 Waning of Vesak, Year of the Horse, Atthasak, BE 2570
@@ -126,26 +125,26 @@ console.log(result);
 ```ts
 {
   gregorianDate: '2026-05-20',
-  dayOfWeek: 'ពុធ',
+  dayOfWeek: 'Wednesday',
   buddhistEraYear: 2570,
-  buddhistEraYearKhmer: '២៥៧០',
+  buddhistEraYearKhmer: '2570',
   khmerYear: 2570,
-  khmerYearKhmer: '២៥៧០',
-  khmerMonth: 'ជេស្ឋ',
-  moonStatus: 'កើត',
+  khmerYearKhmer: '2570',
+  khmerMonth: 'Jyeshtha',
+  moonStatus: 'Waxing',
   moonDay: 4,
-  moonDayKhmer: '៤',
-  animalYear: 'មមី',
-  sak: 'អដ្ឋស័ក',
+  moonDayKhmer: '4',
+  animalYear: 'Horse',
+  sak: 'Atthasak',
   isLeapMonth: false,
   isSilDay: false,
   holidays: [],
-  lunarDateText: 'ថ្ងៃពុធ ៤កើត ខែជេស្ឋ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០',
-  gregorianDateText: 'ថ្ងៃទី២០ ខែឧសភា ឆ្នាំ២០២៦',
-  gregorianDayText: '២០',
-  gregorianMonthText: 'ឧសភា',
-  gregorianYearText: '២០២៦',
-  fullText: 'ថ្ងៃពុធ ៤កើត ខែជេស្ឋ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី២០ ខែឧសភា ឆ្នាំ២០២៦'
+  lunarDateText: 'Wednesday, 4 Waxing of Jyeshtha, Year of the Horse, Atthasak, BE 2570',
+  gregorianDateText: 'May 20, 2026',
+  gregorianDayText: '20',
+  gregorianMonthText: 'May',
+  gregorianYearText: '2026',
+  fullText: 'Wednesday, 4 Waxing of Jyeshtha, Year of the Horse, Atthasak, BE 2570, corresponding to May 20, 2026'
 }
 ```
 
@@ -157,47 +156,37 @@ import { toKhmerLunarDate } from 'khmer-chhankitek-calendar';
 const result = toKhmerLunarDate('2026-05-01');
 
 result.lunarDateText;
-// ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩
 
 result.gregorianDateText;
-// ថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦
 
 result.gregorianDayText;
-// ១
 
 result.gregorianMonthText;
-// ឧសភា
 
 result.gregorianYearText;
-// ២០២៦
 
 result.buddhistEraYearKhmer;
-// ២៥៦៩
 
 result.khmerYearKhmer;
-// ២៥៦៩
 
 result.moonDayKhmer;
-// ១៥
 
 result.observanceText;
-// ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី
 
 result.fullText;
-// ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ ត្រូវនឹងថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦ ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី
 ```
 
 Use these fields when you need to build your own UI layout:
 
 | Field                | Example                                                    | Meaning                                        |
 | -------------------- | ---------------------------------------------------------- | ---------------------------------------------- |
-| `lunarDateText`      | `ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩` | Full Khmer lunar date text                     |
-| `gregorianDateText`  | `ថ្ងៃទី១ ខែឧសភា ឆ្នាំ២០២៦`                                 | Full Khmer Gregorian date text                 |
-| `gregorianDayText`   | `១`                                                        | Gregorian day as Khmer digits only             |
-| `gregorianMonthText` | `ឧសភា`                                                     | Gregorian month name only                      |
-| `gregorianYearText`  | `២០២៦`                                                     | Gregorian year as Khmer digits only            |
-| `observanceText`     | `ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី`                           | Present only when the date has observance text |
-| `fullText`           | `ថ្ងៃសុក្រ ... ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី`             | Combined display sentence                      |
+| `lunarDateText`      | `Friday, 15 Waxing of Vesak, Year of the Horse, Atthasak, BE 2569` | Full lunar date text                     |
+| `gregorianDateText`  | `May 1, 2026`                                                    | Full Gregorian date text                 |
+| `gregorianDayText`   | `1`                                                              | Gregorian day                             |
+| `gregorianMonthText` | `May`                                                            | Gregorian month name                      |
+| `gregorianYearText`  | `2026`                                                           | Gregorian year                            |
+| `observanceText`     | `Observance day`                                                 | Present only when the date has observance text |
+| `fullText`           | `Friday, 15 Waxing of Vesak, ...`                                | Combined display sentence                 |
 
 ### Supported date inputs
 
@@ -219,7 +208,6 @@ Date-only strings are treated as calendar dates. ISO date-time strings with `Z` 
 import { formatKhmerDate } from 'khmer-chhankitek-calendar';
 
 formatKhmerDate('2026-05-16');
-// ថ្ងៃសៅរ៍ ១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០
 ```
 
 ### Format English text
@@ -237,16 +225,12 @@ formatKhmerDate('2026-05-16', { locale: 'en' });
 import { formatKhmerDate } from 'khmer-chhankitek-calendar';
 
 formatKhmerDate('2026-05-16', { format: 'full' });
-// ថ្ងៃសៅរ៍ ១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០
 
 formatKhmerDate('2026-05-16', { format: 'long' });
-// ១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ព.ស. ២៥៧០
 
 formatKhmerDate('2026-05-16', { format: 'medium' });
-// ១៥រោច ខែពិសាខ ព.ស. ២៥៧០
 
 formatKhmerDate('2026-05-16', { format: 'short' });
-// ១៥រោច ពិសាខ ២៥៧០
 
 formatKhmerDate('2026-05-16', { locale: 'en', format: 'short' });
 // 15 Waning, Vesak, BE 2570
@@ -261,7 +245,6 @@ formatKhmerDate('2026-05-16', {
   format: 'medium',
   useKhmerNumbers: false,
 });
-// 15រោច ខែពិសាខ ព.ស. 2570
 ```
 
 ### Include Gregorian date
@@ -272,7 +255,6 @@ import { formatKhmerDate } from 'khmer-chhankitek-calendar';
 formatKhmerDate('2026-12-09', {
   includeGregorianDate: true,
 });
-// ថ្ងៃពុធ ១៥រោច ខែកត្តិក ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០ ត្រូវនឹងថ្ងៃទី៩ ខែធ្នូ ឆ្នាំ២០២៦
 ```
 
 ### Include holiday names
@@ -283,7 +265,6 @@ import { formatKhmerDate } from 'khmer-chhankitek-calendar';
 formatKhmerDate('2026-05-01', {
   includeHoliday: true,
 });
-// ថ្ងៃសុក្រ ១៥កើត ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៦៩ [ទិវាពលកម្មអន្តរជាតិ, វិសាខបូជា]
 ```
 
 ### Get holidays for a year
@@ -335,7 +316,7 @@ interface KhmerLunarDate {
   khmerYear: number;
   khmerYearKhmer: string;
   khmerMonth: KhmerMonth;
-  moonStatus: 'កើត' | 'រោច';
+  moonStatus: string;
   moonDay: number;
   moonDayKhmer: string;
   animalYear: AnimalYear;
@@ -379,10 +360,10 @@ Formatter output styles:
 
 | Option   | Khmer example                                             |
 | -------- | --------------------------------------------------------- |
-| `full`   | `ថ្ងៃសៅរ៍ ១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០` |
-| `long`   | `១៥រោច ខែពិសាខ ឆ្នាំមមី អដ្ឋស័ក ព.ស. ២៥៧០`                |
-| `medium` | `១៥រោច ខែពិសាខ ព.ស. ២៥៧០`                                 |
-| `short`  | `១៥រោច ពិសាខ ២៥៧០`                                        |
+| `full`   | `Saturday, 15 Waning of Vesak, Year of the Horse, Atthasak, BE 2570` |
+| `long`   | `15 Waning of Vesak, Year of the Horse, Atthasak, BE 2570`          |
+| `medium` | `15 Waning of Vesak, BE 2570`                                      |
+| `short`  | `15 Waning, Vesak 2570`                                            |
 
 ### Helper Functions
 
@@ -439,8 +420,8 @@ app.get('/khmer-date/:date', (req, res) => {
 ## Year Boundary Notes
 
 - `animalYear` and `sak` change at Khmer New Year
-- `buddhistEraYear` changes later, at `១រោច ខែពិសាខ`
-- `fullText` may include Khmer observance text such as `ថ្ងៃនេះ ជាថ្ងៃសីល` or `ថ្ងៃនេះ ជាថ្ងៃសីល និងពេញបូណ៌មី`
+- `buddhistEraYear` changes later in the lunar year
+- `fullText` may include observance text when applicable
 
 Examples:
 
